@@ -1,8 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/carento-api/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/carento-api/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/carento-api",
+  "projects": {
+    "carento-api": {
+      "type": "application",
+      "root": "apps/carento-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/carento-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/carento-api/tsconfig.app.json"
+      }
+    },
+    "carento-batch": {
+      "type": "application",
+      "root": "apps/carento-batch",
+      "entryFile": "main",
+      "sourceRoot": "apps/carento-batch/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/carento-batch/tsconfig.app.json"
+      }
+    }
   }
 }
