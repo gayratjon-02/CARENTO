@@ -5,19 +5,19 @@ const BookingSchema = new Schema(
 	{
 		userId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'Member',
 			required: true,
 		},
 
 		agentId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'Member',
 			required: true,
 		},
 
 		carId: {
 			type: Schema.Types.ObjectId,
-			ref: 'cars',
+			ref: 'Car',
 			required: true,
 		},
 
@@ -46,7 +46,7 @@ const BookingSchema = new Schema(
 		paymentStatus: {
 			type: String,
 			enum: PaymentStatus,
-			default: PaymentStatus.PENDING,
+			default: PaymentStatus.UNPAID,
 			required: true,
 		},
 	},
