@@ -16,12 +16,12 @@ const LikeSchema = new Schema(
 
 		memberId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'Member',
 			required: true,
 		},
 	},
 	{ timestamps: true, collection: 'likes' },
 );
+LikeSchema.index({ likeRefId: 1, memberId: 1 }, { unique: true });
 
 export default LikeSchema;
-
