@@ -28,7 +28,7 @@ const NoticeSchema = new Schema(
 
 		memberId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'Member',
 			required: true,
 		},
 	},
