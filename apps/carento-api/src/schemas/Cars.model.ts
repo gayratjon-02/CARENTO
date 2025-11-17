@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { BrandType, CarStatus, CarType, FuelType, Transmission } from '../libs/enums/car.enum';
+import { BrandType, CarLocation, CarStatus, CarType, FuelType, Transmission } from '../libs/enums/car.enum';
 
 const CarsSchema = new Schema(
 	{
@@ -14,7 +14,7 @@ const CarsSchema = new Schema(
 
 		agentId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'Member',
 			required: true,
 		},
 
@@ -69,27 +69,29 @@ const CarsSchema = new Schema(
 		carStatus: {
 			type: String,
 			enum: CarStatus,
-			default: CarStatus.AVAILABLE,
+			default: CarStatus.ACTIVE,
 			required: true,
 		},
 
 		carLocation: {
 			type: String,
+			enum: CarLocation,
 			required: true,
 		},
 
 		carImages: {
 			type: [String],
-			default: [],
 			required: true,
 		},
 
 		pricePerDay: {
 			type: Number,
+			required: true,
 		},
 
 		pricePerHour: {
 			type: Number,
+			required: true,
 		},
 
 		carViews: {
@@ -104,7 +106,7 @@ const CarsSchema = new Schema(
 	{ timestamps: true, collection: 'cars' },
 );
 
-CarsSchema.index({ carTitle: 'text', carDescription: 'text', carLocation: 'text' });
+CarsSchema.index({ carTitle: 'text', carDescription: 'text', carLocation: 'text', carType: 'text', brandType: 'text', fuelType: 'text', transmission: 'text' });
 
 export default CarsSchema;
 

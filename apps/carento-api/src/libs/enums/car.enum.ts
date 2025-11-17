@@ -1,16 +1,15 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum BrandType {
-	TOYOTA = 'TOYOTA',
-	HONDA = 'HONDA',
-	FORD = 'FORD',
 	BMW = 'BMW',
 	MERCEDES = 'MERCEDES',
-	AUDI = 'AUDI',
 	VOLKSWAGEN = 'VOLKSWAGEN',
-	HYUNDAI = 'HYUNDAI',
+	VOLVO = 'VOLVO',
+	JAGUAR = 'JAGUAR',
+	LEXUS = 'LEXUS',
+	AUDI = 'AUDI',
+	HONDA = 'HONDA',
 	KIA = 'KIA',
-	OTHER = 'OTHER',
 }
 
 registerEnumType(BrandType, {
@@ -19,11 +18,10 @@ registerEnumType(BrandType, {
 });
 
 export enum FuelType {
-	GASOLINE = 'GASOLINE',
+	PETROL = 'PETROL',
 	DIESEL = 'DIESEL',
-	ELECTRIC = 'ELECTRIC',
 	HYBRID = 'HYBRID',
-	OTHER = 'OTHER',
+	ELECTRIC = 'ELECTRIC',
 }
 
 registerEnumType(FuelType, {
@@ -42,13 +40,15 @@ registerEnumType(Transmission, {
 });
 
 export enum CarType {
+	SPORT = 'SPORT',
+	HATCHBACK = 'HATCHBACK',
 	SEDAN = 'SEDAN',
 	SUV = 'SUV',
-	HATCHBACK = 'HATCHBACK',
+	CROSSOVER = 'CROSSOVER',
 	COUPE = 'COUPE',
+	MINIVAN = 'MINIVAN',
 	CONVERTIBLE = 'CONVERTIBLE',
-	VAN = 'VAN',
-	TRUCK = 'TRUCK',
+	PICKUP = 'PICKUP',
 	OTHER = 'OTHER',
 }
 
@@ -58,9 +58,9 @@ registerEnumType(CarType, {
 });
 
 export enum CarStatus {
-	AVAILABLE = 'AVAILABLE',
-	BOOKED = 'BOOKED',
-	MAINTENANCE = 'MAINTENANCE',
+	ACTIVE = 'ACTIVE',
+	INACTIVE = 'INACTIVE',
+	BLOCKED = 'BLOCKED',
 	DELETED = 'DELETED',
 }
 
@@ -69,3 +69,14 @@ registerEnumType(CarStatus, {
 	description: 'CarStatus',
 });
 
+export enum CarLocation {
+	SEOUL = 'SEOUL',
+	BUSAN = 'BUSAN',
+	DAEGU = 'DAEGU',
+	INCHEON = 'INCHEON',
+	GWANGJU = 'GWANGJU',
+	DAEJEON = 'DAEJEON',
+	ULSAN = 'ULSAN',
+	SEJONG = 'SEJONG',
+	OTHER = 'OTHER',
+}
