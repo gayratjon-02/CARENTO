@@ -4,18 +4,17 @@ const FollowSchema = new Schema(
 	{
 		followingId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
 			required: true,
 		},
 
 		followerId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
 			required: true,
 		},
 	},
 	{ timestamps: true, collection: 'follows' },
 );
 
-export default FollowSchema;
+FollowSchema.index({ followingId: 1, followerId: 1 }, { unique: true });
 
+export default FollowSchema;
