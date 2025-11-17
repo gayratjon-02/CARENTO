@@ -1,0 +1,27 @@
+import { Schema } from 'mongoose';
+import { ViewGroup } from '../libs/enums/view.enum';
+
+const ViewSchema = new Schema(
+	{
+		viewGroup: {
+			type: String,
+			enum: ViewGroup,
+			required: true,
+		},
+
+		viewRefId: {
+			type: Schema.Types.ObjectId,
+			required: true,
+		},
+
+		memberId: {
+			type: Schema.Types.ObjectId,
+			ref: 'members',
+			required: true,
+		},
+	},
+	{ timestamps: true, collection: 'views' },
+);
+
+export default ViewSchema;
+
