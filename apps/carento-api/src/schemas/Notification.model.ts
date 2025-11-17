@@ -12,7 +12,7 @@ const NotificationSchema = new Schema(
 		notificationStatus: {
 			type: String,
 			enum: NotificationStatus,
-			default: NotificationStatus.UNREAD,
+			default: NotificationStatus.WAIT,
 			required: true,
 		},
 
@@ -34,26 +34,27 @@ const NotificationSchema = new Schema(
 
 		authorId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'Member',
 			required: true,
 		},
 
 		receiverId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
+			ref: 'MEMBER',
 			required: true,
 		},
 
-		propertyId: {
+		carId: {
 			type: Schema.Types.ObjectId,
+			ref: 'Car',
 		},
 
 		articleId: {
 			type: Schema.Types.ObjectId,
+			ref: 'Article',
 		},
 	},
 	{ timestamps: true, collection: 'notifications' },
 );
 
 export default NotificationSchema;
-
