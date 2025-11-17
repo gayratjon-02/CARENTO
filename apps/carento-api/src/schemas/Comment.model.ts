@@ -7,7 +7,6 @@ const CommentSchema = new Schema(
 			type: String,
 			enum: CommentStatus,
 			default: CommentStatus.ACTIVE,
-			required: true,
 		},
 
 		commentGroup: {
@@ -28,14 +27,10 @@ const CommentSchema = new Schema(
 
 		memberId: {
 			type: Schema.Types.ObjectId,
-			ref: 'members',
 			required: true,
 		},
 	},
 	{ timestamps: true, collection: 'comments' },
 );
 
-CommentSchema.index({ memberId: 1, commentRefId: 1, commentContent: 1 });
-
 export default CommentSchema;
-
