@@ -12,6 +12,18 @@ import { NoticeModule } from './notice/notice.module';
 import { NotificationModule } from './notification/notification.module';
 
 @Module({
-	imports: [MemberModule, CarsModule, AuthModule, CommentModule, LikeModule, ViewModule, FollowModule, ArticleModule, BookingModule, NoticeModule, NotificationModule],
+	imports: [
+		MemberModule,
+		CarsModule,
+		AuthModule,
+		CommentModule,
+		LikeModule,
+		ViewModule,
+		FollowModule,
+		ArticleModule,
+		BookingModule,
+		NoticeModule,
+		NotificationModule,
+	],
 })
 export class ComponentsModule {}
