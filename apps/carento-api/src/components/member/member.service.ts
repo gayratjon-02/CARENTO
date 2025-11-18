@@ -4,6 +4,15 @@ import { Model } from 'mongoose';
 @Injectable()
 export class MemberService {
 	constructor(private readonly memberModel: Model<null>) {}
+
+	public async checkAuth(): Promise<String> {
+		return 'checkAuth';
+	}
+
+	public async checkAuthRoles(): Promise<String> {
+		return 'checkAuthRoles';
+	}
+
 	public async signup(): Promise<String> {
 		return 'signup';
 	}
@@ -18,5 +27,9 @@ export class MemberService {
 
 	public async getMember(): Promise<String> {
 		return 'getMember';
+	}
+
+	public async getAgents(): Promise<String> {
+		return 'getAgents';
 	}
 }

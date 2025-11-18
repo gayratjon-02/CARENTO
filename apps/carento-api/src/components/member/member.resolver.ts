@@ -5,6 +5,24 @@ import { MemberService } from './member.service';
 export class MemberResolver {
 	constructor(private readonly memberService: MemberService) {}
 
+    @Query(() => String)
+	public async checkAuth(): Promise<String> {
+		console.log('Query checkAuth');
+		return this.memberService.checkAuth();
+	}
+
+    @Query(() => String)
+	public async getMcheckAuthRolesember(): Promise<String> {
+		console.log('Query checkAuthRoles');
+		return this.memberService.checkAuthRoles();
+	}
+
+    @Query(() => String)
+	public async getAgents(): Promise<String> {
+		console.log('Query getAgents');
+		return this.memberService.getAgents();
+	}
+
 	@Mutation(() => String)
 	public async signup(): Promise<String> {
 		console.log('Mutation signup');
