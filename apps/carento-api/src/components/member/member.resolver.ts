@@ -20,11 +20,11 @@ export class MemberResolver {
 		return this.memberService.checkAuthRoles();
 	}
 
-	@Query(() => String)
-	public async getAgents(): Promise<String> {
-		console.log('Query getAgents');
-		return this.memberService.getAgents();
-	}
+	// @Query(() => String)
+	// public async getAgents(): Promise<String> {
+	// 	console.log('Query getAgents');
+	// 	return this.memberService.getAgents();
+	// }
 
 	@Mutation(() => Member)
 	@UsePipes(ValidationPipe)
@@ -33,20 +33,21 @@ export class MemberResolver {
 		return this.memberService.signup(input);
 	}
 
-	@Mutation(() => String)
-	public async login(@Args('input') input: LoginInput): Promise<String> {
+	@Mutation(() => Member)
+	@UsePipes(ValidationPipe)
+	public async login(@Args('input') input: LoginInput): Promise<Member> {
 		console.log('Mutation login');
-		return this.memberService.login();
+		return this.memberService.login(input);
 	}
 
-	@Mutation(() => String)
-	public async updateMember(): Promise<String> {
-		console.log('Mutation updateMember');
-		return this.memberService.updateMember();
-	}
-	@Query(() => String)
-	public async getMember(): Promise<String> {
-		console.log('Query getMember');
-		return this.memberService.getMember();
-	}
+	// @Mutation(() => String)
+	// public async updateMember(): Promise<String> {
+	// 	console.log('Mutation updateMember');
+	// 	return this.memberService.updateMember();
+	// }
+	// @Query(() => String)
+	// public async getMember(): Promise<String> {
+	// 	console.log('Query getMember');
+	// 	return this.memberService.getMember();
+	// }
 }
