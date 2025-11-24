@@ -5,7 +5,7 @@ import { Member } from '../../libs/dto/member';
 import { LoginInput, MemberInput } from '../../libs/dto/member.input';
 import { Message } from '../../libs/enums/common.enum';
 import { MemberStatus } from '../../libs/enums/member.enum';
-import { AuthService } from '../auth/guards/auth.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MemberService {

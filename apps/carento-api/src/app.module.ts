@@ -8,7 +8,7 @@ import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { T } from './libs/types/common';
-import { AuthService } from './components/auth/guards/auth.service';
+import { AuthService } from './components/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
