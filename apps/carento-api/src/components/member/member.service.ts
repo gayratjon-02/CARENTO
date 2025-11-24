@@ -51,15 +51,11 @@ export class MemberService {
 		if (!response.memberPassword) {
 			throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 		}
-
 		//todo: compare password with hashed password
 		const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
 		if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 
-		// const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
-		// if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
-
-		// response.accessToken = await this.authService.createToken(response);
+		response.accessToken = await this.authService.createToken(response);
 
 		return response;
 	}
