@@ -5,10 +5,14 @@ import { Member } from '../../libs/dto/member';
 import { LoginInput, MemberInput } from '../../libs/dto/member.input';
 import { Message } from '../../libs/enums/common.enum';
 import { MemberStatus } from '../../libs/enums/member.enum';
+import { AuthService } from '../auth/guards/auth.service';
 
 @Injectable()
 export class MemberService {
-	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>) {}
+	constructor(
+		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		private authService: AuthService,
+	) {}
 
 	public async checkAuth(): Promise<String> {
 		return 'checkAuth';
@@ -19,11 +23,11 @@ export class MemberService {
 	}
 
 	public async signup(input: MemberInput): Promise<Member> {
-		// input.memberPassword = await this.authService.hashPassword(input.memberPassword);
+		input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 
 		try {
 			const result = await this.memberModel.create(input);
-			// result.accessToken = await this.authService.createToken(result);
+			result.accessToken = await this.authService.createToken(result);
 			return result;
 		} catch (err) {
 			console.log('Error, Service.model', err.message);
@@ -44,8 +48,12 @@ export class MemberService {
 			throw new InternalServerErrorException(Message.BLOCKED_USER);
 		}
 
+		if (!response.memberPassword) {
+			throw new InternalServerErrorException(Message.WRONG_PASSWORD);
+		}
+
 		//todo: compare password with hashed password
-		const isMatch = memberPassword === response.memberPassword;
+		const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
 		if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 
 		// const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
