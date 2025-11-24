@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MemberModule } from './member/member.module';
 import { CarsModule } from './cars/cars.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/guards/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
 import { ViewModule } from './view/view.module';
