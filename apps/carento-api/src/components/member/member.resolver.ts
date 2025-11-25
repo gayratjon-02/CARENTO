@@ -2,15 +2,19 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { MemberService } from './member.service';
 import { LoginInput, MemberInput } from '../../libs/dto/member.input';
 import { Member } from '../../libs/dto/member';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { AuthMember } from '../auth/decorators/authMember.decorator';
 
 @Resolver()
 export class MemberResolver {
 	constructor(private readonly memberService: MemberService) {}
 
+	@UseGuards(AuthGuard)
 	@Query(() => String)
-	public async checkAuth(): Promise<String> {
+	public async checkAuth(@AuthMember('memberNick') memberNick: string): Promise<String> {
 		console.log('Query checkAuth');
-		return this.memberService.checkAuth();
+		return `${memberNick} is authenticated`;
 	}
 
 	@Query(() => String)

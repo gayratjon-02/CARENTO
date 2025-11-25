@@ -14,10 +14,7 @@ export class MemberService {
 		private authService: AuthService,
 	) {}
 
-	public async checkAuth(): Promise<String> {
-		return 'checkAuth';
-	}
-
+ 
 	public async checkAuthRoles(): Promise<String> {
 		return 'checkAuthRoles';
 	}
