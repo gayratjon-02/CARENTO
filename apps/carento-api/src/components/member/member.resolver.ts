@@ -54,6 +54,7 @@ export class MemberResolver {
 		return this.memberService.login(input);
 	}
 
+	// done: updateMember
 	@UseGuards(AuthGuard)
 	@Mutation(() => Member)
 	public async updateMember(
@@ -64,6 +65,8 @@ export class MemberResolver {
 		return this.memberService.updateMember(input, memberId);
 	}
 
+
+	// done: getMember
 	@UseGuards(WithoutGuard)
 	@Query(() => Member)
 	public async getMember(
