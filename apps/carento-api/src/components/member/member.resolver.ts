@@ -8,11 +8,14 @@ import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { MemberUpdate } from '../../libs/dto/member.update';
+import * as mongoose from 'mongoose';
 
 @Resolver()
 export class MemberResolver {
 	constructor(private readonly memberService: MemberService) {}
 
+	// done: checkAuth
 	@UseGuards(AuthGuard)
 	@Query(() => String)
 	public async checkAuth(@AuthMember('memberNick') memberNick: string): Promise<String> {
@@ -35,32 +38,33 @@ export class MemberResolver {
 		return this.memberService.checkAuthRoles();
 	}
 
-	// @Query(() => String)
-	// public async getAgents(): Promise<String> {
-	// 	console.log('Query getAgents');
-	// 	return this.memberService.getAgents();
-	// }
 
+
+		// done: signup
 	@Mutation(() => Member)
 	public async signup(@Args('input') input: MemberInput): Promise<Member> {
 		console.log('Mutation signup');
 		return this.memberService.signup(input);
 	}
 
+	// done: login
 	@Mutation(() => Member)
 	public async login(@Args('input') input: LoginInput): Promise<Member> {
 		console.log('Mutation login');
 		return this.memberService.login(input);
 	}
 
-	// @Mutation(() => String)
-	// public async updateMember(): Promise<String> {
-	// 	console.log('Mutation updateMember');
-	// 	return this.memberService.updateMember();
-	// }
-	// @Query(() => String)
-	// public async getMember(): Promise<String> {
-	// 	console.log('Query getMember');
-	// 	return this.memberService.getMember();
-	// }
+
+	@UseGuards(AuthGuard)
+	@Mutation(() => Member)
+	public async updateMember(
+		@Args('input') input: MemberUpdate,
+		@AuthMember('_id') memberId: mongoose.ObjectId,
+	): Promise<Member> {
+		console.log('Mutation: updateMember');
+		console.log("input:", input)
+		return this.memberService.updateMember(input, memberId)
+	}
+
+
 }
