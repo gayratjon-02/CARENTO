@@ -5,6 +5,9 @@ import { Member } from '../../libs/dto/member';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { MemberType } from '../../libs/enums/member.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Resolver()
 export class MemberResolver {
@@ -17,8 +20,17 @@ export class MemberResolver {
 		return `${memberNick} is authenticated`;
 	}
 
+
+	@Roles(MemberType.USER, MemberType.AGENT)
+	@UseGuards(RolesGuard)
 	@Query(() => String)
-	public async getMcheckAuthRolesember(): Promise<String> {
+	public async checkAuthRoles(@AuthMember() authMember: Member): Promise<String> {
+		console.log('Query checkAuthRoles');
+		return `${authMember.memberNick} is authenticated, you are ${authMember.memberType}, your memberId: ${authMember._id}`;
+	}	
+
+	@Query(() => String)
+	public async getCheckAuthRolesMember(): Promise<String> {
 		console.log('Query checkAuthRoles');
 		return this.memberService.checkAuthRoles();
 	}
