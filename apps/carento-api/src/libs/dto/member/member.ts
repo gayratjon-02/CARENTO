@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import type { ObjectId } from 'mongoose';
-import { MemberAuthType, MemberStatus, MemberType } from '../enums/member.enum';
+import { MemberAuthType, MemberStatus, MemberType } from '../../enums/member.enum';
 // import { MeLiked } from '../like/like';
 // import { MeFollowed } from '../follow/follow';
 

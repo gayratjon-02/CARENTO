@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { Member } from 'apps/carento-api/src/libs/dto/member';
 import { T } from 'apps/carento-api/src/libs/types/common';
 import { shapeIntoMongoObjectId } from 'apps/carento-api/src/libs/config';
+import { Member } from '../../libs/dto/member/member';
 
 @Injectable()
 export class AuthService {
