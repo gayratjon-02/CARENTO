@@ -1,18 +1,24 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Member } from '../../libs/dto/member';
-import { LoginInput, MemberInput } from '../../libs/dto/member.input';
 import { Message } from '../../libs/enums/common.enum';
 import { MemberStatus } from '../../libs/enums/member.enum';
 import { AuthService } from '../auth/auth.service';
-import { MemberUpdate } from '../../libs/dto/member.update';
+import { T } from '../../libs/types/common';
+import { Member } from '../../libs/dto/member/member';
+import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { MemberUpdate } from '../../libs/dto/member/member.update';
+import { ViewGroup } from '../../libs/enums/view.enum';
+import { ViewService } from '../view/view.service';
 
 @Injectable()
 export class MemberService {
 	constructor(
 		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		// @InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
 		private authService: AuthService,
+		private viewService: ViewService,
+		// private likeService: LikeService,
 	) {}
 
 	public async checkAuthRoles(): Promise<String> {
@@ -77,8 +83,35 @@ export class MemberService {
 		return result;
 	}
 
-	public async getMember(): Promise<String> {
-		return 'getMember';
+	public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
+		const search: T = {
+			_id: targetId,
+			memberStatus: {
+				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCKED],
+			},
+		};
+		const targetMember = await this.memberModel.findOne(search).lean().exec();
+		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		//TODO: View And Like And Follow
+		// if (memberId) {
+		// record view
+		// 	const viewInput = { memberId: memberId, viewRefId: targetId, viewGroup: ViewGroup.MEMBER };
+		// 	const newView = await this.viewService.recordView(viewInput);
+		// increase memberView
+		// 	if (newView) {
+		// 		await this.memberModel.findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
+		// 		targetMember.memberViews++;
+		// 	}
+
+		//meLiked
+		// const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
+		// targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput);
+		//meFollowed
+
+		// targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
+		// }
+
+		return targetMember;
 	}
 
 	public async getAgents(): Promise<String> {
