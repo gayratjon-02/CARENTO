@@ -1,239 +1,281 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { IsArray, IsEnum, IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { ObjectId } from 'mongoose';
-import { availableAgentSorts, availableOptions, availablePropertySorts } from '../../config';
+import { BrandType, CarLocation, CarStatus, CarType, FuelType, Transmission } from '../../enums/car.enum';
 import { Direction } from '../../enums/common.enum';
+import { availableAgentSorts } from '../../config';
 
-// @InputType()
-// export class PropertyInput {
-// 	@IsNotEmpty()
-// 	@Field(() => PropertyType)
-// 	propertyType: PropertyType;
+@InputType()
+export class CarsInput {
+	@IsNotEmpty()
+	@Length(3, 100)
+	@Field(() => String)
+	carTitle: string;
 
-// 	@IsNotEmpty()
-// 	@Field(() => PropertyLocation)
-// 	propertyLocation: PropertyLocation;
+	@IsOptional()
+	@Length(5, 1000)
+	@Field(() => String, { nullable: true })
+	carDescription?: string;
 
-// 	@IsNotEmpty()
-// 	@Length(3, 100)
-// 	@Field(() => String)
-// 	propertyAddress: string;
+	agentId?: ObjectId;
 
-// 	@IsNotEmpty()
-// 	@Length(3, 100)
-// 	@Field(() => String)
-// 	propertyTitle: string;
+	@IsNotEmpty()
+	@IsEnum(BrandType)
+	@Field(() => BrandType)
+	brandType: BrandType;
 
-// 	@IsNotEmpty()
-// 	@Field(() => Number)
-// 	propertyPrice: number;
+	@IsNotEmpty()
+	@IsInt()
+	@Min(1900)
+	@Field(() => Int)
+	year: number;
 
-// 	@IsNotEmpty()
-// 	@Field(() => Number)
-// 	propertySquare: number;
+	@IsNotEmpty()
+	@IsEnum(FuelType)
+	@Field(() => FuelType)
+	fuelType: FuelType;
 
-// 	@IsNotEmpty()
-// 	@IsInt()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	propertyBeds: number;
+	@IsNotEmpty()
+	@IsEnum(Transmission)
+	@Field(() => Transmission)
+	transmission: Transmission;
 
-// 	@IsNotEmpty()
-// 	@IsInt()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	propertyRooms: number;
+	@IsNotEmpty()
+	@IsInt()
+	@Min(1)
+	@Field(() => Int)
+	seats: number;
 
-// 	@IsNotEmpty()
-// 	@Field(() => [String])
-// 	propertyImages: string[];
+	@IsNotEmpty()
+	@IsInt()
+	@Min(2)
+	@Field(() => Int)
+	doors: number;
 
-// 	@IsOptional()
-// 	@Length(5, 500)
-// 	@Field(() => String, { nullable: true })
-// 	propertyDesc?: string;
+	@IsNotEmpty()
+	@IsInt()
+	@Min(0)
+	@Field(() => Int)
+	mileage: number;
 
-// 	@IsOptional()
-// 	@Field(() => Boolean, { nullable: true })
-// 	propertyBarter?: boolean;
+	@IsOptional()
+	@Length(1, 50)
+	@Field(() => String, { nullable: true })
+	engine?: string;
 
-// 	@IsOptional()
-// 	@Field(() => Boolean, { nullable: true })
-// 	propertyRent?: boolean;
+	@IsNotEmpty()
+	@IsEnum(CarType)
+	@Field(() => CarType)
+	carType: CarType;
 
-// 	memberId?: ObjectId;
+	@IsOptional()
+	@IsEnum(CarStatus)
+	@Field(() => CarStatus, { nullable: true })
+	carStatus?: CarStatus;
 
-// 	@IsOptional()
-// 	@Field(() => Date, { nullable: true })
-// 	constructedAt?: Date;
-// }
+	@IsNotEmpty()
+	@Field(() => CarLocation)
+	carLocation: CarLocation;
 
-// @InputType()
-// export class PricesRange {
-// 	@Field(() => Int)
-// 	start: number;
+	@IsNotEmpty()
+	@IsArray()
+	@IsNotEmpty({ each: true })
+	@Field(() => [String])
+	carImages: string[];
 
-// 	@Field(() => Int)
-// 	end: number;
-// }
+	@IsNotEmpty()
+	@Min(0)
+	@Field(() => Number)
+	pricePerDay: number;
 
-// @InputType()
-// export class SquaresRange {
-// 	@Field(() => Int)
-// 	start: number;
+	@IsNotEmpty()
+	@Min(0)
+	@Field(() => Number)
+	pricePerHour: number;
+}
 
-// 	@Field(() => Int)
-// 	end: number;
-// }
+@InputType()
+export class PricesRange {
+	@Field(() => Int)
+	start: number;
 
-// @InputType()
-// export class PeriodsRange {
-// 	@Field(() => Date)
-// 	start: Date;
+	@Field(() => Int)
+	end: number;
+}
 
-// 	@Field(() => Date)
-// 	end: Date;
-// }
+@InputType()
+export class PeriodsRange {
+	@Field(() => Date)
+	start: Date;
 
-// @InputType()
-// export class PISearch {
-// 	@IsOptional()
-// 	@Field(() => String, { nullable: true })
-// 	memberId?: ObjectId;
+	@Field(() => Date)
+	end: Date;
+}
 
-// 	@IsOptional()
-// 	@Field(() => [PropertyLocation], { nullable: true })
-// 	locationList?: PropertyLocation[];
+@InputType()
+export class CarsSearch {
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	agentId?: ObjectId;
 
-// 	@IsOptional()
-// 	@Field(() => [PropertyType], { nullable: true })
-// 	typeList?: PropertyType[];
+	@IsOptional()
+	@IsArray()
+	@Field(() => [CarLocation], { nullable: true })
+	locationList?: CarLocation[];
 
-// 	@IsOptional()
-// 	@Field(() => [Int], { nullable: true })
-// 	roomsList?: Number[];
+	@IsOptional()
+	@IsArray()
+	@IsEnum(CarType, { each: true })
+	@Field(() => [CarType], { nullable: true })
+	carTypeList?: CarType[];
 
-// 	@IsOptional()
-// 	@Field(() => [Int], { nullable: true })
-// 	bedsList?: Number[];
+	@IsOptional()
+	@Field(() => [BrandType], { nullable: true })
+	brandTypeList?: BrandType[];
 
-// 	@IsOptional()
-// 	@IsIn(availableOptions, { each: true })
-// 	@Field(() => [String], { nullable: true })
-// 	options?: string[];
+	@IsOptional()
+	@Field(() => [FuelType], { nullable: true })
+	fuelTypeList?: FuelType[];
 
-// 	@IsOptional()
-// 	@Field(() => PricesRange, { nullable: true })
-// 	pricesRange?: PricesRange;
+	@IsOptional()
+	@Field(() => [Transmission], { nullable: true })
+	transmissionList?: Transmission[];
 
-// 	@IsOptional()
-// 	@Field(() => PricesRange, { nullable: true })
-// 	periodsRange?: PeriodsRange;
+	@IsOptional()
+	@Field(() => [Int], { nullable: true })
+	seatsList?: number[];
 
-// 	@IsOptional()
-// 	@Field(() => SquaresRange, { nullable: true })
-// 	squaresRange?: SquaresRange;
+	@IsOptional()
+	@Field(() => [Int], { nullable: true })
+	yearList?: number[];
 
-// 	@IsOptional()
-// 	@Field(() => String, { nullable: true })
-// 	text?: string;
-// }
+	@IsOptional()
+	@Field(() => PricesRange, { nullable: true })
+	pricePerDayRange?: PricesRange;
 
-// @InputType()
-// export class PropertiesInquiry {
-// 	@IsNotEmpty()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	page: number;
+	@IsOptional()
+	@Field(() => PricesRange, { nullable: true })
+	pricePerHourRange?: PricesRange;
 
-// 	@IsNotEmpty()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	limit: number;
+	@IsOptional()
+	@Field(() => PricesRange, { nullable: true })
+	mileageRange?: PricesRange;
 
-// 	@IsOptional()
-// 	@IsIn(availablePropertySorts)
-// 	@Field(() => String, { nullable: true })
-// 	sort?: string;
+	@IsOptional()
+	@Field(() => PeriodsRange, { nullable: true })
+	periodsRange?: PeriodsRange;
 
-// 	@IsOptional()
-// 	@Field(() => Direction, { nullable: true })
-// 	direction?: Direction;
+	@IsOptional()
+	@IsEnum(CarStatus)
+	@Field(() => CarStatus, { nullable: true })
+	carStatus?: CarStatus;
 
-// 	@IsNotEmpty()
-// 	@Field(() => PISearch)
-// 	search: PISearch;
-// }
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	text?: string;
+}
 
-// @InputType()
-// class APISearch {
-// 	@IsOptional()
-// 	@Field(() => PropertyStatus, { nullable: true })
-// 	propertyStatus?: PropertyStatus;
-// }
+@InputType()
+export class CarsInquiry {
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
 
-// @InputType()
-// export class AgentPropertiesInquiry {
-// 	@IsNotEmpty()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	page: number;
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
 
-// 	@IsNotEmpty()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	limit: number;
+	@IsOptional()
+	@IsIn(availableAgentSorts)
+	@Field(() => String, { nullable: true })
+	sort?: string;
 
-// 	@IsOptional()
-// 	@IsIn(availablePropertySorts)
-// 	@Field(() => String, { nullable: true })
-// 	sort?: string;
+	@IsOptional()
+	@IsEnum(Direction)
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
 
-// 	@IsOptional()
-// 	@Field(() => Direction, { nullable: true })
-// 	direction?: Direction;
+	@IsNotEmpty()
+	@Field(() => CarsSearch)
+	search: CarsSearch;
+}
 
-// 	@IsNotEmpty()
-// 	@Field(() => APISearch)
-// 	search: APISearch;
-// }
+@InputType()
+class AgentCarsSearch {
+	@IsOptional()
+	@IsEnum(CarStatus)
+	@Field(() => CarStatus, { nullable: true })
+	carStatus?: CarStatus;
+}
 
-// @InputType()
-// class ALPISearch {
-// 	@IsOptional()
-// 	@Field(() => PropertyStatus, { nullable: true })
-// 	propertyStatus?: PropertyStatus;
+@InputType()
+export class AgentCarsInquiry {
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
 
-// 	@IsOptional()
-// 	@Field(() => [PropertyLocation], { nullable: true })
-// 	propertyLocationList?: PropertyLocation[];
-// }
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
 
-// @InputType()
-// export class AllPropertiesInquiry {
-// 	@IsNotEmpty()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	page: number;
+	@IsOptional()
+	@IsIn(availableAgentSorts)
+	@Field(() => String, { nullable: true })
+	sort?: string;
 
-// 	@IsNotEmpty()
-// 	@Min(1)
-// 	@Field(() => Int)
-// 	limit: number;
+	@IsOptional()
+	@IsEnum(Direction)
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
 
-// 	@IsNotEmpty()
-// 	@IsIn(availablePropertySorts)
-// 	@Field(() => String, { nullable: true })
-// 	sort?: string;
+	@IsNotEmpty()
+	@Field(() => AgentCarsSearch)
+	search: AgentCarsSearch;
+}
 
-// 	@IsOptional()
-// 	@Field(() => Direction, { nullable: true })
-// 	direction?: Direction;
+@InputType()
+class AllCarsSearch {
+	@IsOptional()
+	@IsEnum(CarStatus)
+	@Field(() => CarStatus, { nullable: true })
+	carStatus?: CarStatus;
 
-// 	@IsNotEmpty()
-// 	@Field(() => ALPISearch)
-// 	search?: ALPISearch;
-// }
+	@IsOptional()
+	@IsArray()
+	@Field(() => [CarLocation], { nullable: true })
+	carLocationList?: CarLocation[];
+}
+
+@InputType()
+export class AllCarsInquiry {
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
+
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
+
+	@IsOptional()
+	@IsIn(availableAgentSorts)
+	@Field(() => String, { nullable: true })
+	sort?: string;
+
+	@IsOptional()
+	@IsEnum(Direction)
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
+
+	@IsOptional()
+	@Field(() => AllCarsSearch, { nullable: true })
+	search?: AllCarsSearch;
+}
 
 @InputType()
 export class OrdinaryInquiry {

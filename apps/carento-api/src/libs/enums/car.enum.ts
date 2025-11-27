@@ -80,3 +80,7 @@ export enum CarLocation {
 	SEJONG = 'SEJONG',
 	OTHER = 'OTHER',
 }
+registerEnumType(CarLocation, {
+	name: 'CarLocation',
+	description: 'CarLocation',
+});

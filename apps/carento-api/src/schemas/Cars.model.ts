@@ -98,6 +98,10 @@ const CarsSchema = new Schema(
 			type: Number,
 			default: 0,
 		},
+		carLikes: {
+			type: Number,
+			default: 0,
+		},
 
 		deletedAt: {
 			type: Date,
