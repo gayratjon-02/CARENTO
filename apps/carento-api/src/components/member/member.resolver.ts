@@ -9,8 +9,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import type { ObjectId } from 'mongoose';
 import { shapeIntoMongoObjectId } from '../../libs/config';
-import { Member } from '../../libs/dto/member/member';
-import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { Member, Members } from '../../libs/dto/member/member';
+import { AgentsInquiry, LoginInput, MemberInput } from '../../libs/dto/member/member.input';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 
 
@@ -77,5 +77,13 @@ export class MemberResolver {
 		const targetId = shapeIntoMongoObjectId(input);
 
 		return await this.memberService.getMember(memberId, targetId);
+	}
+
+	//Agents
+	@UseGuards(WithoutGuard)
+	@Query(() => Members)
+	public async getAgents(@Args('input') input: AgentsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<Members> {
+		console.log('Query: getAgents');
+		return await this.memberService.getAgents(memberId, input);
 	}
 }
