@@ -4,13 +4,16 @@ import { Model, ObjectId } from 'mongoose';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
 import { AuthService } from '../auth/auth.service';
-import { T } from '../../libs/types/common';
+import { StatisticModifier, T } from '../../libs/types/common';
 import { Member, Members } from '../../libs/dto/member/member';
 import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { loopupAuthMemberLiked } from '../../libs/config';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class MemberService {
@@ -19,7 +22,7 @@ export class MemberService {
 		// @InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
 		private authService: AuthService,
 		private viewService: ViewService,
-		// private likeService: LikeService,
+		private likeService: LikeService,
 	) {}
 
 	public async checkAuthRoles(): Promise<String> {
@@ -143,6 +146,28 @@ export class MemberService {
 		return result[0];
 	}
 
+	public async likeTargetMember(memberId: ObjectId, likeRefId: ObjectId): Promise<Member> {
+		const target: Member | null = await this.memberModel.findOne({ _id: likeRefId, memberStatus: MemberStatus.ACTIVE }).exec();
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.MEMBER,
+		};
+
+		// Like TOGGLE via like
+		const modifier: number = await this.likeService.toggleLike(input);
+		const result = await this.memberStatsEditor({
+			_id: likeRefId,
+			targetKey: 'memberLikes',
+			modifier: modifier,
+		});
+
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
+	}
+
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
 		const { memberStatus, memberType, text } = input.search,
 			match: T = {},
@@ -169,12 +194,19 @@ export class MemberService {
 		return result[0];
 	}
 
-
 	public async updateMemberByAdmin(input: MemberUpdate): Promise<Member> {
-		const result: Member | null = await this.memberModel.findOneAndUpdate({ _id: input._id }, input, { new: true }).exec();
+		const result: Member | null = await this.memberModel
+			.findOneAndUpdate({ _id: input._id }, input, { new: true })
+			.exec();
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
 		return result;
 	}
 
+	// stats editor
+
+	public async memberStatsEditor(input: StatisticModifier): Promise<Member | null> {
+		const { _id, targetKey, modifier } = input;
+		return await this.memberModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true }).exec();
+	}
 }
