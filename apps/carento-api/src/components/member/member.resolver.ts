@@ -10,7 +10,7 @@ import { WithoutGuard } from '../auth/guards/without.guard';
 import type { ObjectId } from 'mongoose';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { Member, Members } from '../../libs/dto/member/member';
-import { AgentsInquiry, LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 
 
@@ -79,11 +79,21 @@ export class MemberResolver {
 		return await this.memberService.getMember(memberId, targetId);
 	}
 
-	//Agents
+	//Agents done
 	@UseGuards(WithoutGuard)
 	@Query(() => Members)
 	public async getAgents(@Args('input') input: AgentsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<Members> {
 		console.log('Query: getAgents');
 		return await this.memberService.getAgents(memberId, input);
+	}
+
+
+	//** ADMIN **/
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Query(() => Members)
+	public async getAllMembersByAdmin(@Args('input') input: MembersInquiry): Promise<Members> {
+		console.log('Query: getAllMembersByAdmin');
+		return await this.memberService.getAllMembersByAdmin(input);
 	}
 }
