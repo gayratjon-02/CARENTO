@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CarsInput, CarsInquiry } from '../../libs/dto/cars/cars.input';
+import { CarsInput, CarsInquiry, OrdinaryInquiry } from '../../libs/dto/cars/cars.input';
 import { Car, CarsList } from '../../libs/dto/cars/cars';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
@@ -148,6 +148,11 @@ export class CarsService {
 		if (pricePerHour) match.pricePerHour = { $gte: pricePerHour.start, $lte: pricePerHour.end };
 		if (mileage) match.mileage = { $gte: mileage.start, $lte: mileage.end };
 		if (text) match.carTitle = { $regex: new RegExp(text, 'i') };
+	}
+
+	// get favorites
+	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<CarsList> {
+		return await this.likeService.getFavouriteCars(memberId, input);
 	}
 
 	// car stats editor

@@ -5,12 +5,13 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Car, CarsList } from '../../libs/dto/cars/cars';
-import { CarsInput, CarsInquiry } from '../../libs/dto/cars/cars.input';
+import { CarsInput, CarsInquiry, OrdinaryInquiry } from '../../libs/dto/cars/cars.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { CarsUpdate } from '../../libs/dto/cars/cars.update';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Resolver()
 export class CarsResolver {
@@ -42,10 +43,7 @@ export class CarsResolver {
 	@Roles(MemberType.AGENT)
 	@UseGuards(RolesGuard)
 	@Mutation((returns) => Car)
-	public async updateCar(
-		@Args('input') input: CarsUpdate,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Car> {
+	public async updateCar(@Args('input') input: CarsUpdate, @AuthMember('_id') memberId: ObjectId): Promise<Car> {
 		console.log('Mutation: updateCar');
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.carsService.updateCar(memberId, input);
@@ -54,11 +52,19 @@ export class CarsResolver {
 	// Get Car
 	@UseGuards(WithoutGuard)
 	@Query(() => CarsList)
-	public async getCars(
-		@Args('input') input: CarsInquiry,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<CarsList> {
+	public async getCars(@Args('input') input: CarsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<CarsList> {
 		console.log('Query: getCars');
 		return await this.carsService.getCars(memberId, input);
+	}
+	// get favorite cars
+
+	@UseGuards(AuthGuard)
+	@Query((returns) => CarsList)
+	public async getFavorites(
+		@Args('input') input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<CarsList> {
+		console.log('Query: getFavorites');
+		return await this.carsService.getFavorites(memberId, input);
 	}
 }
