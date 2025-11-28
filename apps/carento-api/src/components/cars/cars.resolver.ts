@@ -113,4 +113,14 @@ export class CarsResolver {
 		console.log('Query: getAllCarsByAdmin');
 		return await this.carsService.getAllCarsByAdmin(input);
 	}
+
+	// update by admin
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation((returns) => Car)
+	public async updateCarByAdmin(@Args('input') input: CarsUpdate): Promise<Car> {
+		console.log('Mutation: updateCarByAdmin');
+		input._id = shapeIntoMongoObjectId(input._id);
+		return this.carsService.updateCarByAdmin(input);
+	}
 }

@@ -247,6 +247,37 @@ export class CarsService {
 		return result[0];
 	}
 
+	// update
+
+	public async updateCarByAdmin(input: CarsUpdate): Promise<Car> {
+		let { carStatus, deletedAt } = input;
+		const search: T = {
+			_id: input._id,
+			carStatus: CarStatus.ACTIVE,
+		};
+
+		if (carStatus === CarStatus.BLOCKED) deletedAt = moment().toDate();
+		else if (carStatus === CarStatus.DELETED) deletedAt = moment().toDate();
+
+		const result = await this.carsModel
+			.findOneAndUpdate(search, input, {
+				new: true,
+			})
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+		if (deletedAt) {
+			await this.memberService.memberStatsEditor({
+				_id: result.memberId,
+				targetKey: 'memberCars',
+				modifier: -1,
+			});
+		}
+
+		return result;
+	}
+
 	// car stats editor
 	public async carStatsEditor(input: StatisticModifier): Promise<Car> {
 		const { _id, targetKey, modifier } = input;
