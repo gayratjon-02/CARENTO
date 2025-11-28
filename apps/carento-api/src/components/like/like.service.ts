@@ -72,7 +72,6 @@ export class LikeService {
 			])
 			.exec();
 
-		// Bo'sh natija holatini boshqarish
 		if (!data || !data.length || !data[0]) {
 			return { list: [], metaCounter: [{ total: 0 }] };
 		}

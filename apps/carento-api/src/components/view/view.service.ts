@@ -58,8 +58,15 @@ export class ViewService {
 			])
 			.exec();
 
-		const result: CarsList = { list: [], metaCounter: data[0].metaCounter };
-		result.list = data[0].list.map((ele) => ele.visitedProperty);
+		if (!data || !data.length || !data[0].list) {
+			return { list: [], metaCounter: [{ total: 0 }] };
+		}
+
+		const result: CarsList = {
+			list: [],
+			metaCounter: data[0].metaCounter,
+		};
+		result.list = data[0].list.map((ele: any) => ele.visitedCars);
 
 		return result;
 	}

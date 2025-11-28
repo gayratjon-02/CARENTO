@@ -68,19 +68,24 @@ export class CarsResolver {
 		return await this.carsService.getFavorites(memberId, input);
 	}
 
+	// get Visited
+	@UseGuards(AuthGuard)
+	@Query(() => CarsList)
+	public async getVisited(
+		@Args('input') input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<CarsList> {
+		console.log('Query: getVisited');
+		return await this.carsService.getVisited(memberId, input);
+	}
 
 	//** LIKE **/
 
-
 	@UseGuards(AuthGuard)
 	@Mutation(() => Car)
-	public async likeTargetCar(
-		@Args('carId') input: string,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Car> {
+	public async likeTargetCar(@Args('carId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Car> {
 		console.log('Mutation: likeTargetCar');
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.carsService.likeTargetCar(memberId, likeRefId);
 	}
-
 }

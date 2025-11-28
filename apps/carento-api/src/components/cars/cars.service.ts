@@ -155,6 +155,11 @@ export class CarsService {
 	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<CarsList> {
 		return await this.likeService.getFavouriteCars(memberId, input);
 	}
+	// get visited
+
+	public async getVisited(memberId: ObjectId, input: OrdinaryInquiry): Promise<CarsList> {
+		return await this.viewService.getVisitedCars(memberId, input);
+	}
 
 	//** LIKE CAR **/
 
