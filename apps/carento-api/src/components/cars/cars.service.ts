@@ -278,6 +278,16 @@ export class CarsService {
 		return result;
 	}
 
+	// remove cars by admin
+
+	public async removeCarByAdmin(carId: ObjectId): Promise<Car> {
+		const search: T = { _id: carId, carStatus: CarStatus.DELETED };
+		const result = await this.carsModel.findOneAndDelete(search).exec();
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
+		return result;
+	}
+
 	// car stats editor
 	public async carStatsEditor(input: StatisticModifier): Promise<Car> {
 		const { _id, targetKey, modifier } = input;
