@@ -160,6 +160,36 @@ export class CarsService {
 	public async getVisited(memberId: ObjectId, input: OrdinaryInquiry): Promise<CarsList> {
 		return await this.viewService.getVisitedCars(memberId, input);
 	}
+	// get agent cars
+
+	public async getAgentCars(memberId: ObjectId, input: CarsInquiry): Promise<CarsList> {
+		const match: T = {
+			memberId: memberId,
+			carStatus: CarStatus.ACTIVE,
+		};
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		const result = await this.carsModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [
+							{ $skip: (input.page - 1) * input.limit },
+							{ $limit: input.limit },
+							lookupMember,
+							{ $unwind: '$memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return result[0];
+	}
 
 	//** LIKE CAR **/
 

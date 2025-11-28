@@ -79,6 +79,18 @@ export class CarsResolver {
 		return await this.carsService.getVisited(memberId, input);
 	}
 
+	/// Get Cars By Agent
+	@Roles(MemberType.AGENT)
+	@UseGuards(RolesGuard)
+	@Query(() => CarsList)
+	public async getAgentCars(
+		@Args('input') input: CarsInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<CarsList> {
+		console.log('Query: getAgentCars');
+		return await this.carsService.getAgentCars(memberId, input);
+	}
+
 	//** LIKE **/
 
 	@UseGuards(AuthGuard)
