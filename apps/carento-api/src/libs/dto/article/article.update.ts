@@ -1,61 +1,29 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
+import { IsNotEmpty, IsOptional, Length } from 'class-validator';
 import { ObjectId } from 'mongoose';
-import { Member, TotalCounter } from '../member/member';
-import { MeLiked } from '../like/like';
-import { ArticleCategory, ArticleStatus } from '../../enums/article.enum';
+import { ArticleStatus } from '../../enums/article.enum';
 
-@ObjectType()
-export class Article {
+@InputType()
+export class ArticleUpdate {
+	@IsNotEmpty()
 	@Field(() => String)
 	_id: ObjectId;
 
-	@Field(() => ArticleCategory)
-	articleCategory: ArticleCategory;
+	@IsOptional()
+	@Field(() => ArticleStatus, { nullable: true })
+	articleStatus?: ArticleStatus;
 
-	@Field(() => ArticleStatus)
-	articleStatus: ArticleStatus;
+	@IsOptional()
+	@Length(3, 50)
+	@Field(() => String, { nullable: true })
+	articleTitle?: string;
 
-	@Field(() => String)
-	articleTitle: string;
+	@IsOptional()
+	@Length(3, 250)
+	@Field(() => String, { nullable: true })
+	articleContent?: string;
 
-	@Field(() => String)
-	articleContent: string;
-
+	@IsOptional()
 	@Field(() => String, { nullable: true })
 	articleImage?: string;
-
-	@Field(() => Int)
-	articleViews: number;
-
-	@Field(() => Int)
-	articleLikes: number;
-
-	@Field(() => Int)
-	articleComments: number;
-
-	@Field(() => String)
-	memberId: ObjectId;
-
-	@Field(() => Date)
-	createdAt: Date;
-
-	@Field(() => Date)
-	updatedAt: Date;
-
-	/** from aggregation **/
-
-	@Field(() => [MeLiked], { nullable: true })
-	meLiked: MeLiked[];
-
-	@Field(() => Member, { nullable: true })
-	memberData?: Member;
-}
-
-@ObjectType()
-export class BoardArticles {
-	@Field(() => [Article])
-	list: Article[];
-
-	@Field(() => [TotalCounter], { nullable: true })
-	metaCounter: TotalCounter[];
 }

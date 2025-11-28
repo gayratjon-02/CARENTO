@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Article } from '../../libs/dto/article/article.update';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
 import { LikeService } from '../like/like.service';
@@ -11,6 +10,8 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ArticleStatus } from '../../libs/enums/article.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeGroup } from '../../libs/enums/like.enum';
+import { Article } from '../../libs/dto/article/article';
+import { ArticleUpdate } from '../../libs/dto/article/article.update';
 
 @Injectable()
 export class ArticleService {
@@ -61,6 +62,34 @@ export class ArticleService {
 		}
 		targetBoardArticle.memberData = await this.memberService.getMember(null, targetBoardArticle.memberId);
 		return targetBoardArticle;
+	}
+
+	public async updateArticle(memberId: ObjectId, input: ArticleUpdate): Promise<Article> {
+		const { _id, articleStatus } = input;
+
+		const result = await this.articleModel
+			.findOneAndUpdate(
+				{
+					_id: _id,
+					memberId: memberId,
+					articleStatus: ArticleStatus.ACTIVE,
+				},
+				input,
+				{ new: true },
+			)
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPLOAD_FAILED);
+
+		if (articleStatus === ArticleStatus.DELETED) {
+			await this.memberService.memberStatsEditor({
+				_id: memberId,
+				targetKey: 'memberArticles',
+				modifier: -1,
+			});
+		}
+
+		return result;
 	}
 
 	//** articleStatsEditor **/
