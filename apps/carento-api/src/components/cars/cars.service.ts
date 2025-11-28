@@ -1,18 +1,19 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CarsInput } from '../../libs/dto/cars/cars.input';
-import { Car } from '../../libs/dto/cars/cars';
+import { CarsInput, CarsInquiry } from '../../libs/dto/cars/cars.input';
+import { Car, CarsList } from '../../libs/dto/cars/cars';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { LikeService } from '../like/like.service';
 import { Model, ObjectId } from 'mongoose';
-import { Message } from '../../libs/enums/common.enum';
+import { Direction, Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { CarStatus } from '../../libs/enums/car.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import moment from 'moment';
 import { CarsUpdate } from '../../libs/dto/cars/cars.update';
+import { lookupMember, loopupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
 @Injectable()
 export class CarsService {
 	constructor(
@@ -81,6 +82,72 @@ export class CarsService {
 			});
 		}
 		return result;
+	}
+
+	// get cars
+
+	public async getCars(memberId: ObjectId, input: CarsInquiry): Promise<CarsList> {
+		const match: T = { carStatus: CarStatus.ACTIVE };
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		this.shapeMatchQuery(match, input);
+		console.log('match:', match);
+
+		const result = await this.carsModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [
+							{ $skip: (input.page - 1) * input.limit },
+							{ $limit: input.limit },
+							// meLiked
+							loopupAuthMemberLiked(memberId),
+							lookupMember,
+							{ $unwind: '$memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return result[0];
+	}
+
+	// shape match query
+
+	private shapeMatchQuery(match: T, input: CarsInquiry): void {
+		const {
+			memberId,
+			locationList,
+			carType,
+			brandType,
+			fuelType,
+			transmission,
+			seats,
+			year,
+			pricePerDay,
+			pricePerHour,
+			mileage,
+
+			text,
+		} = input.search;
+
+		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
+		if (locationList && locationList.length) match.carLocation = { $in: locationList };
+		if (carType && carType.length) match.carType = { $in: carType };
+		if (brandType && brandType.length) match.brandType = { $in: brandType };
+		if (fuelType && fuelType.length) match.fuelType = { $in: fuelType };
+		if (transmission && transmission.length) match.transmission = { $in: transmission };
+		if (seats && seats.length) match.seats = { $in: seats };
+		if (year && year.length) match.year = { $in: year };
+		if (pricePerDay) match.pricePerDay = { $gte: pricePerDay.start, $lte: pricePerDay.end };
+		if (pricePerHour) match.pricePerHour = { $gte: pricePerHour.start, $lte: pricePerHour.end };
+		if (mileage) match.mileage = { $gte: mileage.start, $lte: mileage.end };
+		if (text) match.carTitle = { $regex: new RegExp(text, 'i') };
 	}
 
 	// car stats editor

@@ -104,19 +104,10 @@ export class PricesRange {
 }
 
 @InputType()
-export class PeriodsRange {
-	@Field(() => Date)
-	start: Date;
-
-	@Field(() => Date)
-	end: Date;
-}
-
-@InputType()
 export class CarsSearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
-	agentId?: ObjectId;
+	memberId?: ObjectId;
 
 	@IsOptional()
 	@IsArray()
@@ -127,48 +118,39 @@ export class CarsSearch {
 	@IsArray()
 	@IsEnum(CarType, { each: true })
 	@Field(() => [CarType], { nullable: true })
-	carTypeList?: CarType[];
+	carType?: CarType[];
 
 	@IsOptional()
 	@Field(() => [BrandType], { nullable: true })
-	brandTypeList?: BrandType[];
+	brandType?: BrandType[];
 
 	@IsOptional()
 	@Field(() => [FuelType], { nullable: true })
-	fuelTypeList?: FuelType[];
+	fuelType?: FuelType[];
 
 	@IsOptional()
 	@Field(() => [Transmission], { nullable: true })
-	transmissionList?: Transmission[];
+	transmission?: Transmission[];
 
 	@IsOptional()
 	@Field(() => [Int], { nullable: true })
-	seatsList?: number[];
+	seats?: number[];
 
 	@IsOptional()
 	@Field(() => [Int], { nullable: true })
-	yearList?: number[];
+	year?: number[];
 
 	@IsOptional()
 	@Field(() => PricesRange, { nullable: true })
-	pricePerDayRange?: PricesRange;
+	pricePerDay?: PricesRange;
 
 	@IsOptional()
 	@Field(() => PricesRange, { nullable: true })
-	pricePerHourRange?: PricesRange;
+	pricePerHour?: PricesRange;
 
 	@IsOptional()
 	@Field(() => PricesRange, { nullable: true })
-	mileageRange?: PricesRange;
-
-	@IsOptional()
-	@Field(() => PeriodsRange, { nullable: true })
-	periodsRange?: PeriodsRange;
-
-	@IsOptional()
-	@IsEnum(CarStatus)
-	@Field(() => CarStatus, { nullable: true })
-	carStatus?: CarStatus;
+	mileage?: PricesRange;
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })

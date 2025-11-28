@@ -18,7 +18,8 @@ registerEnumType(BrandType, {
 });
 
 export enum FuelType {
-	PETROL = 'PETROL',
+	GASOLINE = 'GASOLINE',
+	LPG = 'LPG',
 	DIESEL = 'DIESEL',
 	HYBRID = 'HYBRID',
 	ELECTRIC = 'ELECTRIC',

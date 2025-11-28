@@ -4,8 +4,8 @@ import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
-import { Car } from '../../libs/dto/cars/cars';
-import { CarsInput } from '../../libs/dto/cars/cars.input';
+import { Car, CarsList } from '../../libs/dto/cars/cars';
+import { CarsInput, CarsInquiry } from '../../libs/dto/cars/cars.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
@@ -49,5 +49,16 @@ export class CarsResolver {
 		console.log('Mutation: updateCar');
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.carsService.updateCar(memberId, input);
+	}
+
+	// Get Car
+	@UseGuards(WithoutGuard)
+	@Query(() => CarsList)
+	public async getCars(
+		@Args('input') input: CarsInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<CarsList> {
+		console.log('Query: getCars');
+		return await this.carsService.getCars(memberId, input);
 	}
 }
