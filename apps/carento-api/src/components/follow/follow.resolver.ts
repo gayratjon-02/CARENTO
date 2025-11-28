@@ -50,7 +50,6 @@ export class FollowResolver {
 	@UseGuards(WithoutGuard)
 	@Query(() => Followers)
 	public async getMemberFollowers(
-		//qachoonga boshqa memberga follw qilmoqchi bolsek ishga tushadi
 		@Args('input') input: FollowInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Followers> {
