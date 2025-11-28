@@ -48,6 +48,7 @@ export class FollowService {
 		}
 	}
 
+	// unsubscribe
 	public async unsubscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
