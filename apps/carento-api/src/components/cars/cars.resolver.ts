@@ -100,4 +100,17 @@ export class CarsResolver {
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.carsService.likeTargetCar(memberId, likeRefId);
 	}
+
+	/** ADMIN **/
+
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Query(() => CarsList)
+	public async getAllCarsByAdmin(
+		@Args('input') input: CarsInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<CarsList> {
+		console.log('Query: getAllCarsByAdmin');
+		return await this.carsService.getAllCarsByAdmin(input);
+	}
 }

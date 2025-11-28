@@ -112,7 +112,7 @@ export class CarsSearch {
 	@IsOptional()
 	@IsArray()
 	@Field(() => [CarLocation], { nullable: true })
-	locationList?: CarLocation[];
+	carLocation?: CarLocation[];
 
 	@IsOptional()
 	@IsArray()
@@ -229,7 +229,7 @@ class AllCarsSearch {
 	@IsOptional()
 	@IsArray()
 	@Field(() => [CarLocation], { nullable: true })
-	carLocationList?: CarLocation[];
+	carLocation?: CarLocation[];
 }
 
 @InputType()
