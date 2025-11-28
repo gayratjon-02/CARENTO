@@ -67,4 +67,20 @@ export class CarsResolver {
 		console.log('Query: getFavorites');
 		return await this.carsService.getFavorites(memberId, input);
 	}
+
+
+	//** LIKE **/
+
+
+	@UseGuards(AuthGuard)
+	@Mutation(() => Car)
+	public async likeTargetCar(
+		@Args('carId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Car> {
+		console.log('Mutation: likeTargetCar');
+		const likeRefId = shapeIntoMongoObjectId(input);
+		return await this.carsService.likeTargetCar(memberId, likeRefId);
+	}
+
 }

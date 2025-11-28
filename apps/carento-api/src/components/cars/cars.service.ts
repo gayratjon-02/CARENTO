@@ -14,6 +14,7 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import moment from 'moment';
 import { CarsUpdate } from '../../libs/dto/cars/cars.update';
 import { lookupMember, loopupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
+import { LikeInput } from '../../libs/dto/like/like.input';
 @Injectable()
 export class CarsService {
 	constructor(
@@ -153,6 +154,30 @@ export class CarsService {
 	// get favorites
 	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<CarsList> {
 		return await this.likeService.getFavouriteCars(memberId, input);
+	}
+
+	//** LIKE CAR **/
+
+	public async likeTargetCar(memberId: ObjectId, likeRefId: ObjectId): Promise<Car> {
+		const target: Car = await this.carsModel.findOne({ _id: likeRefId, carStatus: CarStatus.ACTIVE }).exec();
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.CAR,
+		};
+
+		// Like TOGGLE via like
+		const modifier: number = await this.likeService.toggleLike(input);
+		const result = await this.carStatsEditor({
+			_id: likeRefId,
+			targetKey: 'carLikes',
+			modifier: modifier,
+		});
+
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
 	}
 
 	// car stats editor
