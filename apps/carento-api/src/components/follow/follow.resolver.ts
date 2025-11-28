@@ -16,7 +16,6 @@ export class FollowResolver {
 	@UseGuards(AuthGuard)
 	@Mutation(() => Follower)
 	public async subscribe(
-		//qachoonga boshqa memberga follw qilmoqchi bolsek ishga tushadi
 		@Args('input') input: string,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Follower> {
@@ -28,7 +27,6 @@ export class FollowResolver {
 	@UseGuards(AuthGuard)
 	@Mutation(() => Follower)
 	public async unsubscribe(
-		//qachoonga boshqa memberga follw qilmoqchi bolsek ishga tushadi
 		@Args('input') input: string,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Follower> {
