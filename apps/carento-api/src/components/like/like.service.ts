@@ -64,7 +64,7 @@ export class LikeService {
 							{ $skip: (page - 1) * limit },
 							{ $limit: limit },
 							lookupFavorite,
-							{ $unwind: '$favoriteCars.memberData' },
+							{ $unwind: { path: '$favoriteCars.memberData', preserveNullAndEmptyArrays: true } },
 						],
 						metaCounter: [{ $count: 'total' }],
 					},
@@ -72,8 +72,15 @@ export class LikeService {
 			])
 			.exec();
 
-		const result: CarsList = { list: [], metaCounter: data[0].metaCounter };
-		result.list = data[0].list.map((ele: any) => ele.favoriteProperty);
+		// Bo'sh natija holatini boshqarish
+		if (!data || !data.length || !data[0]) {
+			return { list: [], metaCounter: [{ total: 0 }] };
+		}
+
+		const result: CarsList = {
+			list: (data[0].list || []).map((ele: any) => ele.favoriteCars || ele).filter((car: any) => car),
+			metaCounter: data[0].metaCounter || [{ total: 0 }],
+		};
 
 		return result;
 	}

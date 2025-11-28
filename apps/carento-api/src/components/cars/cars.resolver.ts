@@ -59,7 +59,7 @@ export class CarsResolver {
 	// get favorite cars
 
 	@UseGuards(AuthGuard)
-	@Query((returns) => CarsList)
+	@Query(() => CarsList)
 	public async getFavorites(
 		@Args('input') input: OrdinaryInquiry,
 		@AuthMember('_id') memberId: ObjectId,
