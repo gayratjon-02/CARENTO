@@ -37,7 +37,6 @@ export class CarsService {
 		};
 
 		const targetProperty: Car = await this.carsModel.findOne(search).lean().exec();
-		console.log('targetProperty, keldi', targetProperty);
 		if (!targetProperty) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		if (memberId) {
