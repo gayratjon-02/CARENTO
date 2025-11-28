@@ -59,7 +59,6 @@ registerEnumType(CarType, {
 
 export enum CarStatus {
 	ACTIVE = 'ACTIVE',
-	INACTIVE = 'INACTIVE',
 	BLOCKED = 'BLOCKED',
 	DELETED = 'DELETED',
 }
