@@ -12,7 +12,7 @@ const CarsSchema = new Schema(
 			type: String,
 		},
 
-		agentId: {
+		memberId: {
 			type: Schema.Types.ObjectId,
 			ref: 'Member',
 			required: true,

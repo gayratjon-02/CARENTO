@@ -7,7 +7,7 @@ import { lookupVisit } from '../../libs/config';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { View } from '../../libs/dto/view/view';
 import { OrdinaryInquiry } from '../../libs/dto/cars/cars.input';
-import { Cars, CarsList } from '../../libs/dto/cars/cars';
+import { Car, CarsList } from '../../libs/dto/cars/cars';
 
 @Injectable()
 export class ViewService {

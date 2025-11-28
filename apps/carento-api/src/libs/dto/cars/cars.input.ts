@@ -17,7 +17,7 @@ export class CarsInput {
 	@Field(() => String, { nullable: true })
 	carDescription?: string;
 
-	agentId?: ObjectId;
+	memberId?: ObjectId;
 
 	@IsNotEmpty()
 	@IsEnum(BrandType)

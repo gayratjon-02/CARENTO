@@ -5,18 +5,17 @@ import { Member, TotalCounter } from '../member/member';
 import { MeLiked } from '../like/like';
 
 @ObjectType()
-export class Cars {
+export class Car {
 	@Field(() => String)
 	_id: ObjectId;
 
 	@Field(() => String)
 	carTitle: string;
 
+	memberId?: ObjectId;
+
 	@Field(() => String, { nullable: true })
 	carDescription?: string;
-
-	@Field(() => String)
-	agentId: ObjectId;
 
 	@Field(() => BrandType)
 	brandType: BrandType;
@@ -83,8 +82,8 @@ export class Cars {
 
 @ObjectType()
 export class CarsList {
-	@Field(() => [Cars])
-	list: Cars[];
+	@Field(() => [Car])
+	list: Car[];
 
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];

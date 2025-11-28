@@ -8,7 +8,7 @@ import { Message } from '../../libs/enums/common.enum';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { lookupFavorite } from '../../libs/config';
 import { OrdinaryInquiry } from '../../libs/dto/cars/cars.input';
-import { Cars, CarsList } from '../../libs/dto/cars/cars';
+import { Car, CarsList } from '../../libs/dto/cars/cars';
 
 @Injectable()
 export class LikeService {
