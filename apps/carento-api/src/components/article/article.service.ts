@@ -4,7 +4,7 @@ import { Model, ObjectId } from 'mongoose';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
 import { LikeService } from '../like/like.service';
-import { ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
+import { AllArticlesInquiry, ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { ArticleStatus } from '../../libs/enums/article.enum';
@@ -156,6 +156,39 @@ export class ArticleService {
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 		return result;
+	}
+
+	//** ADMIN **/
+
+	public async getAllArticlesByAdmin(input: AllArticlesInquiry): Promise<Articles> {
+		const { articleStatus, articleCategory } = input.search;
+		const match: T = {};
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		if (articleStatus) match.articleStatus = articleStatus;
+		if (articleCategory) match.articleCategory = articleCategory;
+
+		const result = await this.articleModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [
+							{ $skip: (input.page - 1) * input.limit },
+							{ $limit: input.limit },
+							lookupMember,
+							{ $unwind: '$memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return result[0];
 	}
 
 	//** articleStatsEditor **/

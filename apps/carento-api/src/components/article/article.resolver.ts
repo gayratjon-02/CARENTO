@@ -9,6 +9,9 @@ import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { Article, Articles } from '../../libs/dto/article/article';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { MemberType } from '../../libs/enums/member.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Resolver()
 export class ArticleResolver {
@@ -67,5 +70,18 @@ export class ArticleResolver {
 		console.log('Mutation: likeTargetArticle');
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.articleService.likeTargetArticle(memberId, likeRefId);
+	}
+
+	/** ADMIN **/
+
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Query(() => Articles)
+	public async getAllArticlesByAdmin(
+		@Args('input') input: ArticlesInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Articles> {
+		console.log('Query: getAllArticlesByAdmin ');
+		return await this.articleService.getAllArticlesByAdmin(input);
 	}
 }
