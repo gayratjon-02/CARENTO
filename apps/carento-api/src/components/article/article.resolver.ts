@@ -3,12 +3,12 @@ import { ArticleService } from './article.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import {  ArticleUpdate } from '../../libs/dto/article/article.update';
-import { ArticleInput } from '../../libs/dto/article/article.input';
+import { ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
-import { Article } from '../../libs/dto/article/article';
+import { Article, Articles } from '../../libs/dto/article/article';
 
 @Resolver()
 export class ArticleResolver {
@@ -41,4 +41,16 @@ export class ArticleResolver {
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.articleService.updateArticle(memberId, input);
 	}
+
+    // get Articles
+    @UseGuards(WithoutGuard)
+	@Query(() => Articles)
+	public async getArticles(
+		@Args('input') input: ArticlesInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Articles> {
+		console.log('Query: getArticles ');
+		return await this.articleService.getArticles(memberId, input);
+	}
+
 }

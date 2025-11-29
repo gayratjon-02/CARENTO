@@ -4,14 +4,15 @@ import { Model, ObjectId } from 'mongoose';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
 import { LikeService } from '../like/like.service';
-import { ArticleInput } from '../../libs/dto/article/article.input';
-import { Message } from '../../libs/enums/common.enum';
+import { ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
+import { Direction, Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { ArticleStatus } from '../../libs/enums/article.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeGroup } from '../../libs/enums/like.enum';
-import { Article } from '../../libs/dto/article/article';
+import { Article, Articles } from '../../libs/dto/article/article';
 import { ArticleUpdate } from '../../libs/dto/article/article.update';
+import { lookupMember, loopupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
 export class ArticleService {
@@ -90,6 +91,44 @@ export class ArticleService {
 		}
 
 		return result;
+	}
+
+	// get Articles
+
+	public async getArticles(memberId: ObjectId, input: ArticlesInquiry): Promise<Articles> {
+		const { articleCategory, text } = input.search;
+		const match: T = { articleStatus: ArticleStatus.ACTIVE };
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		if (articleCategory) match.articleCategory = articleCategory;
+		if (text) match.articleTitle = { $regex: new RegExp(text, 'i') };
+		if (input.search?.memberId) {
+			match.memberId = shapeIntoMongoObjectId(input.search.memberId);
+		}
+		console.log('match:', match);
+
+		const result = await this.articleModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [
+							{ $skip: (input.page - 1) * input.limit },
+							{ $limit: input.limit },
+							//meLiked
+							loopupAuthMemberLiked(memberId),
+							lookupMember,
+							{ $unwind: '$memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return result[0];
 	}
 
 	//** articleStatsEditor **/
