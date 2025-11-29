@@ -84,4 +84,17 @@ export class ArticleResolver {
 		console.log('Query: getAllArticlesByAdmin ');
 		return await this.articleService.getAllArticlesByAdmin(input);
 	}
+
+
+    @Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation(() => Article)
+	public async updateArticleByAdmin(
+		@Args('input') input: ArticleUpdate,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Article> {
+		console.log('Mutation: updateArticleByAdmin ');
+		input._id = shapeIntoMongoObjectId(input._id);
+		return await this.articleService.updateArticleByAdmin(input);
+	}
 }

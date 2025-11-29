@@ -191,6 +191,32 @@ export class ArticleService {
 		return result[0];
 	}
 
+	public async updateArticleByAdmin(input: ArticleUpdate): Promise<Article> {
+		const { _id, articleStatus } = input;
+
+		const result = await this.articleModel
+			.findOneAndUpdate(
+				{
+					_id: _id,
+					articleStatus: ArticleStatus.ACTIVE,
+				},
+				input,
+				{ new: true },
+			)
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+		if (articleStatus === ArticleStatus.DELETED) {
+			await this.memberService.memberStatsEditor({
+				_id: result.memberId,
+				targetKey: 'memberArticles',
+				modifier: -1,
+			});
+		}
+
+		return result;
+	}
 	//** articleStatsEditor **/
 
 	public async articleStatsEditor(input: StatisticModifier): Promise<Article> {
