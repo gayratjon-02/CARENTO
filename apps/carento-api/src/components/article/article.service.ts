@@ -217,6 +217,14 @@ export class ArticleService {
 
 		return result;
 	}
+
+	public async removeArticleByAdmin(articleId: ObjectId): Promise<Article> {
+		const search: T = { _id: articleId, articleStatus: ArticleStatus.DELETED };
+		const result = await this.articleModel.findOneAndDelete(search).exec();
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
+		return result;
+	}
 	//** articleStatsEditor **/
 
 	public async articleStatsEditor(input: StatisticModifier): Promise<Article> {
