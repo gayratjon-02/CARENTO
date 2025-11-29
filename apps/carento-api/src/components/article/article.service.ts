@@ -13,6 +13,7 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import { Article, Articles } from '../../libs/dto/article/article';
 import { ArticleUpdate } from '../../libs/dto/article/article.update';
 import { lookupMember, loopupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
+import { LikeInput } from '../../libs/dto/like/like.input';
 
 @Injectable()
 export class ArticleService {
@@ -129,6 +130,32 @@ export class ArticleService {
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		return result[0];
+	}
+
+	//** like Target Article **/
+
+	public async likeTargetArticle(memberId: ObjectId, likeRefId: ObjectId): Promise<Article> {
+		const target: Article = await this.articleModel
+			.findOne({ _id: likeRefId, articleStatus: ArticleStatus.ACTIVE })
+			.exec();
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.ARTICLE,
+		};
+
+		// Like TOGGLE via like
+		const modifier: number = await this.likeService.toggleLike(input);
+		const result = await this.articleStatsEditor({
+			_id: likeRefId,
+			targetKey: 'articleLikes',
+			modifier: modifier,
+		});
+
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
 	}
 
 	//** articleStatsEditor **/

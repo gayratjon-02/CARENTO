@@ -2,7 +2,7 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ArticleService } from './article.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import {  ArticleUpdate } from '../../libs/dto/article/article.update';
+import { ArticleUpdate } from '../../libs/dto/article/article.update';
 import { ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
@@ -36,14 +36,17 @@ export class ArticleResolver {
 	// update Article
 	@UseGuards(AuthGuard)
 	@Mutation(() => Article)
-	public async updateArticle(@Args('input') input: ArticleUpdate, @AuthMember('_id') memberId: ObjectId): Promise<Article> {
+	public async updateArticle(
+		@Args('input') input: ArticleUpdate,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Article> {
 		console.log('Mutation: updateArticle ');
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.articleService.updateArticle(memberId, input);
 	}
 
-    // get Articles
-    @UseGuards(WithoutGuard)
+	// get Articles
+	@UseGuards(WithoutGuard)
 	@Query(() => Articles)
 	public async getArticles(
 		@Args('input') input: ArticlesInquiry,
@@ -53,4 +56,16 @@ export class ArticleResolver {
 		return await this.articleService.getArticles(memberId, input);
 	}
 
+	//** LIKE **/
+
+	@UseGuards(AuthGuard)
+	@Mutation(() => Article)
+	public async likeTargetArticle(
+		@Args('articleId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Article> {
+		console.log('Mutation: likeTargetArticle');
+		const likeRefId = shapeIntoMongoObjectId(input);
+		return await this.articleService.likeTargetArticle(memberId, likeRefId);
+	}
 }
