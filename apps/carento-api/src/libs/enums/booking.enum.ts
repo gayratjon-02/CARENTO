@@ -8,6 +8,7 @@ export enum BookingStatus {
 	ACTIVE = 'ACTIVE',
 	COMPLETED = 'COMPLETED',
 	CANCELLED = 'CANCELLED',
+	DELETED = 'DELETED',
 }
 
 registerEnumType(BookingStatus, {

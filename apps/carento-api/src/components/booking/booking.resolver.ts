@@ -12,6 +12,7 @@ import { Booking, BookingsList } from '../../libs/dto/booking/booking';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { BookingUpdate } from '../../libs/dto/booking/booking.update';
 
 @Resolver()
 export class BookingResolver {
@@ -103,5 +104,14 @@ export class BookingResolver {
     public async getAdminBookingsByAdmin(@Args('input') input: BookingInquiry, @AuthMember('_id') memberId: ObjectId): Promise<BookingsList> {
         console.log('Query: getAdminBookingsByAdmin');
         return await this.bookingService.getAdminBookingsByAdmin(input, memberId);
+    }
+
+    //updateBookingByAdmin
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Booking)
+    public async updateBookingByAdmin(@Args('input') input: BookingUpdate, @AuthMember('_id') memberId: ObjectId): Promise<Booking> {
+        console.log('Mutation: updateBookingByAdmin');
+        return await this.bookingService.updateBookingByAdmin(input, memberId);
     }
 }

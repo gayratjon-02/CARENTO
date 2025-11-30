@@ -7,6 +7,7 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { T } from '../../libs/types/common';
 import { BookingStatus, PaymentStatus } from '../../libs/enums/booking.enum';
+import { BookingUpdate } from '../../libs/dto/booking/booking.update';
 
 @Injectable()
 export class BookingService {
@@ -72,6 +73,7 @@ export class BookingService {
 				bookingStatus: BookingStatus.PENDING || BookingStatus.APPROVED,
 			},
 			{ $set: { bookingStatus: BookingStatus.CANCELLED, deletedAt: new Date() } },
+			{ new: true },
 		);
 		if (!result) throw new BadRequestException(Message.CANCEL_FAILED);
 		return result;
@@ -122,6 +124,7 @@ export class BookingService {
 		const result = await this.bookingModel.findOneAndUpdate(
 			{ _id: bookingId, agentId: memberId, bookingStatus: BookingStatus.PAID || BookingStatus.PENDING },
 			{ $set: { bookingStatus: BookingStatus.APPROVED } },
+			{ new: true },
 		);
 		if (!result) throw new BadRequestException(Message.APPROVE_FAILED);
 		return result;
@@ -132,6 +135,7 @@ export class BookingService {
 		const result = await this.bookingModel.findOneAndUpdate(
 			{ _id: bookingId, agentId: memberId, bookingStatus: BookingStatus.PAID || BookingStatus.PENDING },
 			{ $set: { bookingStatus: BookingStatus.REJECTED } },
+			{ new: true },
 		);
 		if (!result) throw new BadRequestException(Message.REJECT_FAILED);
 		return result;
@@ -158,5 +162,16 @@ export class BookingService {
 			])
 			.exec();
 		return result[0];
+	}
+
+	//updateBookingByAdmin
+	public async updateBookingByAdmin(input: BookingUpdate, memberId: ObjectId): Promise<Booking> {
+		const result = await this.bookingModel.findOneAndUpdate(
+			{ _id: input._id },
+			{ $set: { bookingStatus: input.bookingStatus, paymentStatus: input.paymentStatus } },
+			{ new: true },
+		);
+		if (!result) throw new BadRequestException(Message.UPDATE_FAILED);
+		return result;
 	}
 }
