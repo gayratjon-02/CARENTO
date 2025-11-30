@@ -11,6 +11,7 @@ export enum Message {
 	CANCEL_FAILED = 'Cancel failed!',
 	APPROVE_FAILED = 'Approve failed!',
 	REJECT_FAILED = 'Reject failed!',
+	DELETE_FAILED = 'Delete failed!',
 
 	USED_MEMBER_NICK_OR_PHONE = 'Already used member nick or phone!',
 	NO_MEMBER_NICK = 'No member with that member nick!',

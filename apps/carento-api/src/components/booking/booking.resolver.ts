@@ -114,4 +114,14 @@ export class BookingResolver {
         console.log('Mutation: updateBookingByAdmin');
         return await this.bookingService.updateBookingByAdmin(input, memberId);
     }
+
+    // deleteBookingByAdmin
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Booking)
+    public async deleteBookingByAdmin(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Booking> {
+        console.log('Mutation: deleteBookingByAdmin');
+        const bookingId = shapeIntoMongoObjectId(input);
+        return await this.bookingService.deleteBookingByAdmin(bookingId, memberId);
+    }
 }

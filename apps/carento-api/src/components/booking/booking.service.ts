@@ -174,4 +174,11 @@ export class BookingService {
 		if (!result) throw new BadRequestException(Message.UPDATE_FAILED);
 		return result;
 	}
+
+	// deleteBookingByAdmin
+	public async deleteBookingByAdmin(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
+		const result = await this.bookingModel.findOneAndDelete({ _id: bookingId });
+		if (!result) throw new BadRequestException(Message.DELETE_FAILED);
+		return result ;
+	}
 }
