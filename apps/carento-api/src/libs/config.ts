@@ -6,16 +6,18 @@ import { BookingStatus } from './enums/booking.enum';
 
 export const availableAgentSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank'];
 export const availableMemberSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews'];
-export const availableBookingSorts = ['createdAt', 'updatedAt', 'totalPrice', 'startDate', 'endDate', 'bookingStatus', 'paymentStatus'];
-export const availableOptions = ['propertyBarter', 'propertyRent'];
-export const availablePropertySorts = [
+export const availableBookingSorts = [
 	'createdAt',
 	'updatedAt',
-	'carLikes',
-	'carViews',
-	'carRank',
-	'carPrice',
+	'totalPrice',
+	'startDate',
+	'endDate',
+	'bookingStatus',
+	'paymentStatus',
 ];
+
+export const availableOptions = ['propertyBarter', 'propertyRent'];
+export const availablePropertySorts = ['createdAt', 'updatedAt', 'carLikes', 'carViews', 'carRank', 'carPrice'];
 export const availableArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
 

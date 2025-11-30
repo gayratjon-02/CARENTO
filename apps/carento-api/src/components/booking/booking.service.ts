@@ -65,10 +65,45 @@ export class BookingService {
 	// cancelBooking
 	public async cancelBooking(input: ObjectId, memberId: ObjectId): Promise<Booking> {
 		const result = await this.bookingModel.findOneAndUpdate(
-			{ _id: input, userId: memberId, paymentStatus: PaymentStatus.UNPAID , bookingStatus: BookingStatus.PENDING || BookingStatus.APPROVED },
+			{
+				_id: input,
+				userId: memberId,
+				paymentStatus: PaymentStatus.UNPAID,
+				bookingStatus: BookingStatus.PENDING || BookingStatus.APPROVED,
+			},
 			{ $set: { bookingStatus: BookingStatus.CANCELLED, deletedAt: new Date() } },
 		);
 		if (!result) throw new BadRequestException(Message.CANCEL_FAILED);
 		return result;
+	}
+
+	//**AGENT **/
+
+	// getAgentBookings
+	public async getAgentBookingsByAGent(input: BookingInquiry, memberId: ObjectId): Promise<BookingsList> {
+		const match: T = { agentId: memberId };
+		const sort: T = { [input?.sort ?? 'startDate']: input?.direction ?? Direction.DESC };
+
+		const result = await this.bookingModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		if (!result.length || !result[0]) {
+			return { list: [], metaCounter: [{ total: 0 }] };
+		}
+
+		return {
+			list: result[0].list || [],
+			metaCounter: result[0].metaCounter || [{ total: 0 }],
+		};
 	}
 }

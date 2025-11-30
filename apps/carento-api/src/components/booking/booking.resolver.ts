@@ -10,6 +10,8 @@ import { MemberType } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
 import { Booking, BookingsList } from '../../libs/dto/booking/booking';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Resolver()
 export class BookingResolver {
@@ -18,6 +20,8 @@ export class BookingResolver {
 	// creae booking
 	@Mutation(() => Booking)
 	@UseGuards(AuthGuard)
+
+	//** USER BOOKINGS **/
 	public async createBooking(@Args('input') input: BookingInput, @AuthMember() member: Member): Promise<Booking> {
 		console.log('Mutation: createBooking');
 		if (member.memberType !== MemberType.USER) throw new InternalServerErrorException(Message.ONLY_USERS_ALLOWED);
@@ -52,5 +56,20 @@ export class BookingResolver {
 	public async cancelBooking(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Booking> {
 		console.log('Mutation: cancelBooking');
 		return await this.bookingService.cancelBooking(shapeIntoMongoObjectId(input), memberId);
+	}
+
+	//** AGENT **/
+
+	// getAgentBookings
+	@Roles(MemberType.AGENT)
+	@UseGuards(RolesGuard)
+	@Query(() => BookingsList)
+	public async getAgentBookingsByAGent(
+		@Args('input') input: BookingInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<BookingsList> {
+		console.log('Query: getAgentBookingsByAGent');
+		console.log('step1');
+		return await this.bookingService.getAgentBookingsByAGent(input, memberId);
 	}
 }
