@@ -3,6 +3,7 @@ import { NotificationGroup, NotificationStatus, NotificationType } from '../libs
 
 const NotificationSchema = new Schema(
 	{
+		 
 		notificationType: {
 			type: String,
 			enum: NotificationType,
@@ -40,7 +41,7 @@ const NotificationSchema = new Schema(
 
 		receiverId: {
 			type: Schema.Types.ObjectId,
-			ref: 'MEMBER',
+			ref: 'Member',
 			required: true,
 		},
 

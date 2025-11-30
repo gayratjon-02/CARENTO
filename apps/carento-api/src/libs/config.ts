@@ -20,6 +20,7 @@ export const availableOptions = ['propertyBarter', 'propertyRent'];
 export const availablePropertySorts = ['createdAt', 'updatedAt', 'carLikes', 'carViews', 'carRank', 'carPrice'];
 export const availableArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
+export const availableNotificationSorts = ['createdAt', 'updatedAt', 'notificationStatus', 'notificationType', 'notificationGroup'];
 
 /**  IMAGE CONFIGURATION **/
 
