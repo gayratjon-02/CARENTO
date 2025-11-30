@@ -1,7 +1,12 @@
 import { ObjectId } from 'bson';
+import { v4 as uuidv4 } from 'uuid';
+import * as path from 'path';
+import { T } from './types/common';
+import { BookingStatus } from './enums/booking.enum';
 
 export const availableAgentSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank'];
 export const availableMemberSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews'];
+export const availableBookingSorts = ['createdAt', 'updatedAt', 'totalPrice', 'startDate', 'endDate', 'bookingStatus', 'paymentStatus'];
 export const availableOptions = ['propertyBarter', 'propertyRent'];
 export const availablePropertySorts = [
 	'createdAt',
@@ -15,9 +20,6 @@ export const availableArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
 
 /**  IMAGE CONFIGURATION **/
-import { v4 as uuidv4 } from 'uuid';
-import * as path from 'path';
-import { T } from './types/common';
 
 export const validMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 export const getSerialForImage = (filename: string) => {

@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Booking } from '../../libs/dto/booking/booking';
-import { BookingInput } from '../../libs/dto/booking/booking.input';
-import { Message } from '../../libs/enums/common.enum';
+import { Booking, BookingsList } from '../../libs/dto/booking/booking';
+import { BookingInput, BookingInquiry } from '../../libs/dto/booking/booking.input';
+import { Direction, Message } from '../../libs/enums/common.enum';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { T } from '../../libs/types/common';
 
 @Injectable()
 export class BookingService {
@@ -30,5 +31,33 @@ export class BookingService {
 		});
 		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
 		return result;
+	}
+
+	// getMyBookings
+	public async getMyBookings(input: BookingInquiry, memberId: ObjectId): Promise<BookingsList> {
+		const match: T = { userId: memberId };
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		const result = await this.bookingModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		if (!result.length || !result[0]) {
+			return { list: [], metaCounter: [{ total: 0 }] };
+		}
+
+		return {
+			list: result[0].list || [],
+			metaCounter: result[0].metaCounter || [{ total: 0 }],
+		};
 	}
 }

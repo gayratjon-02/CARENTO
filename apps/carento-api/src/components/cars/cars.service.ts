@@ -138,7 +138,7 @@ export class CarsService {
 		} = input.search;
 
 		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-		if (carLocation && carLocation.length) match.carLocation = { $in: location };
+		if (carLocation && carLocation.length) match.carLocation = { $in: carLocation };
 		if (carType && carType.length) match.carType = { $in: carType };
 		if (brandType && brandType.length) match.brandType = { $in: brandType };
 		if (fuelType && fuelType.length) match.fuelType = { $in: fuelType };

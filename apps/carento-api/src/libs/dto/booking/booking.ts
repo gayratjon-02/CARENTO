@@ -1,6 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from "mongoose";
 import { BookingStatus, PaymentStatus } from "../../enums/booking.enum";
+import { Car } from "../cars/cars";
+import { TotalCounter } from "../member/member";
 
 
 @ObjectType()
@@ -40,4 +42,13 @@ export class Booking{
 
 	@Field(() => Date, { nullable: true })
 	deletedAt?: Date;
+}
+
+@ObjectType()
+export class BookingsList {
+	@Field(() => [Booking])
+	list: Booking[];
+
+	@Field(() => [TotalCounter], { nullable: true })
+	metaCounter: TotalCounter[];
 }

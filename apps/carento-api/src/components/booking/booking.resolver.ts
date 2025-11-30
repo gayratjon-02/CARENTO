@@ -2,14 +2,13 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { BookingService } from './booking.service';
 import { InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { Booking } from '../../libs/dto/booking/booking';
-import { BookingInput } from '../../libs/dto/booking/booking.input';
+import { BookingInput, BookingInquiry } from '../../libs/dto/booking/booking.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
-import { shapeIntoMongoObjectId } from '../../libs/config';
 import { Member } from '../../libs/dto/member/member';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
+import { Booking, BookingsList } from '../../libs/dto/booking/booking';
 
 @Resolver()
 export class BookingResolver {
@@ -34,4 +33,13 @@ export class BookingResolver {
 		console.log('Query: getBooking');
 		return await this.bookingService.getBooking(input, memberId);
 	}
+
+    // getMyBookings
+    @UseGuards(AuthGuard)
+    @Query(() => BookingsList)
+    public async getMyBookings(@Args('input') input: BookingInquiry, @AuthMember('_id') memberId: ObjectId): Promise<BookingsList> {
+        console.log('Query: getMyBookings');
+        return await this.bookingService.getMyBookings(input, memberId);
+    }
+
 }
