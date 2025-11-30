@@ -9,7 +9,7 @@ const BookingSchema = new Schema(
 			required: true,
 		},
 
-		memberId: {
+		agentId: {
 			type: Schema.Types.ObjectId,
 			ref: 'Member',
 			required: true,
@@ -40,7 +40,6 @@ const BookingSchema = new Schema(
 			type: String,
 			enum: BookingStatus,
 			default: BookingStatus.PENDING,
-			required: true,
 		},
 
 		paymentStatus: {
