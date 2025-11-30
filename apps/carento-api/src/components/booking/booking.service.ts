@@ -109,31 +109,54 @@ export class BookingService {
 		};
 	}
 
-    private shapeMatchQuery(match: T, input: BookingInquiry): void {
-        const {paymentStatus, carStatus, bookingStatus, brandType} = input;
-        if (paymentStatus) match.paymentStatus = paymentStatus;
-        if (carStatus) match.carStatus = carStatus;
-        if (bookingStatus) match.bookingStatus = bookingStatus;
-        if (brandType) match.brandType = brandType;
-    }
+	private shapeMatchQuery(match: T, input: BookingInquiry): void {
+		const { paymentStatus, carStatus, bookingStatus, brandType } = input;
+		if (paymentStatus) match.paymentStatus = paymentStatus;
+		if (carStatus) match.carStatus = carStatus;
+		if (bookingStatus) match.bookingStatus = bookingStatus;
+		if (brandType) match.brandType = brandType;
+	}
 
-    // approveBooking
-    public async approveBookingByAgent(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
-        const result = await this.bookingModel.findOneAndUpdate(
-            { _id: bookingId, agentId: memberId , bookingStatus: BookingStatus.PAID || BookingStatus.PENDING},
-            { $set: { bookingStatus: BookingStatus.APPROVED } },
-        );
-        if (!result) throw new BadRequestException(Message.APPROVE_FAILED);
-        return result;
-    }
+	// approveBooking
+	public async approveBookingByAgent(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
+		const result = await this.bookingModel.findOneAndUpdate(
+			{ _id: bookingId, agentId: memberId, bookingStatus: BookingStatus.PAID || BookingStatus.PENDING },
+			{ $set: { bookingStatus: BookingStatus.APPROVED } },
+		);
+		if (!result) throw new BadRequestException(Message.APPROVE_FAILED);
+		return result;
+	}
 
-    // rejectBooking
-    public async rejectBookingByAgent(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
-        const result = await this.bookingModel.findOneAndUpdate(
-            { _id: bookingId, agentId: memberId , bookingStatus: BookingStatus.PAID || BookingStatus.PENDING},
-            { $set: { bookingStatus: BookingStatus.REJECTED } },
-        );
-        if (!result) throw new BadRequestException(Message.REJECT_FAILED);
-        return result;
-    }
+	// rejectBooking
+	public async rejectBookingByAgent(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
+		const result = await this.bookingModel.findOneAndUpdate(
+			{ _id: bookingId, agentId: memberId, bookingStatus: BookingStatus.PAID || BookingStatus.PENDING },
+			{ $set: { bookingStatus: BookingStatus.REJECTED } },
+		);
+		if (!result) throw new BadRequestException(Message.REJECT_FAILED);
+		return result;
+	}
+
+	// ** ADMIN **
+	// getAdminBookings
+	public async getAdminBookingsByAdmin(input: BookingInquiry, memberId: ObjectId): Promise<BookingsList> {
+		const match: T = {};
+		const sort: T = { [input?.sort ?? 'startDate']: input?.direction ?? Direction.DESC };
+
+		this.shapeMatchQuery(match, input);
+
+		const result = await this.bookingModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+		return result[0];
+	}
 }

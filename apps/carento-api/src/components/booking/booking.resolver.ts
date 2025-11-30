@@ -93,4 +93,15 @@ export class BookingResolver {
         const bookingId = shapeIntoMongoObjectId(input);
         return await this.bookingService.rejectBookingByAgent(bookingId, memberId);
     }
+
+    //** ADMIN **/
+
+    // getAdminBookings
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Query(() => BookingsList)
+    public async getAdminBookingsByAdmin(@Args('input') input: BookingInquiry, @AuthMember('_id') memberId: ObjectId): Promise<BookingsList> {
+        console.log('Query: getAdminBookingsByAdmin');
+        return await this.bookingService.getAdminBookingsByAdmin(input, memberId);
+    }
 }
