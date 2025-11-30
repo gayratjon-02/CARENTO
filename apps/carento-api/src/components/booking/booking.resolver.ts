@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { BookingService } from './booking.service';
 import { InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -27,5 +27,11 @@ export class BookingResolver {
 		return await this.bookingService.createBooking(input, member._id);
 	}
 
-
+	// get booking
+	@UseGuards(AuthGuard)
+	@Query(() => Booking)
+	public async getBooking(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Booking> {
+		console.log('Query: getBooking');
+		return await this.bookingService.getBooking(input, memberId);
+	}
 }

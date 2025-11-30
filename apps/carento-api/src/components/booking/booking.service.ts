@@ -4,6 +4,7 @@ import { Model, ObjectId } from 'mongoose';
 import { Booking } from '../../libs/dto/booking/booking';
 import { BookingInput } from '../../libs/dto/booking/booking.input';
 import { Message } from '../../libs/enums/common.enum';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
 export class BookingService {
@@ -11,7 +12,6 @@ export class BookingService {
 
 	public async createBooking(input: BookingInput, memberId: ObjectId): Promise<Booking> {
 		try {
-          
 			const result = await this.bookingModel.create(input);
 			if (!result) throw new BadRequestException(Message.CREATE_FAILED);
 			return result;
@@ -19,5 +19,16 @@ export class BookingService {
 			console.log('Error, Booking Service createBooking', err);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
+	}
+
+	// get booking
+	public async getBooking(bookingId: string, memberId: ObjectId): Promise<Booking> {
+		bookingId = shapeIntoMongoObjectId(bookingId);
+		const result = await this.bookingModel.findOne({
+			_id: bookingId,
+			userId: memberId,
+		});
+		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
+		return result;
 	}
 }
