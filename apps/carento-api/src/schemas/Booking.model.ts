@@ -9,7 +9,7 @@ const BookingSchema = new Schema(
 			required: true,
 		},
 
-		agentId: {
+		memberId: {
 			type: Schema.Types.ObjectId,
 			ref: 'Member',
 			required: true,
