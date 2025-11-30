@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module';
 import { T } from './libs/types/common';
 import { AuthService } from './components/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
 	imports: [
@@ -30,6 +31,7 @@ import { JwtService } from '@nestjs/jwt';
 		}),
 		ComponentsModule,
 		DatabaseModule,
+		SocketModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, AppResolver, AuthService, JwtService],
