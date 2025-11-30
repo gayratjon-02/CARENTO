@@ -126,4 +126,14 @@ export class BookingService {
         if (!result) throw new BadRequestException(Message.APPROVE_FAILED);
         return result;
     }
+
+    // rejectBooking
+    public async rejectBookingByAgent(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
+        const result = await this.bookingModel.findOneAndUpdate(
+            { _id: bookingId, agentId: memberId , bookingStatus: BookingStatus.PAID || BookingStatus.PENDING},
+            { $set: { bookingStatus: BookingStatus.REJECTED } },
+        );
+        if (!result) throw new BadRequestException(Message.REJECT_FAILED);
+        return result;
+    }
 }
