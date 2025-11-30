@@ -9,6 +9,7 @@ export enum Message {
 	UPLOAD_FAILED = 'Upload failed!',
 	BAD_REQUEST = 'Bad Request',
 	CANCEL_FAILED = 'Cancel failed!',
+	APPROVE_FAILED = 'Approve failed!',
 
 	USED_MEMBER_NICK_OR_PHONE = 'Already used member nick or phone!',
 	NO_MEMBER_NICK = 'No member with that member nick!',

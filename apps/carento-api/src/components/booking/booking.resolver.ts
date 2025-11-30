@@ -72,4 +72,15 @@ export class BookingResolver {
 		console.log('step1');
 		return await this.bookingService.getAgentBookingsByAGent(input, memberId);
 	}
+    
+
+    // approveBooking
+    @Roles(MemberType.AGENT)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Booking)
+    public async approveBookingByAgent(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Booking> {
+        console.log('Mutation: approveBookingByAgent');
+        const bookingId = shapeIntoMongoObjectId(input);
+        return await this.bookingService.approveBookingByAgent(bookingId, memberId);
+    }
 }

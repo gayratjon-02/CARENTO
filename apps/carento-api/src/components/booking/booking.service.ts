@@ -116,4 +116,14 @@ export class BookingService {
         if (bookingStatus) match.bookingStatus = bookingStatus;
         if (brandType) match.brandType = brandType;
     }
+
+    // approveBooking
+    public async approveBookingByAgent(bookingId: ObjectId, memberId: ObjectId): Promise<Booking> {
+        const result = await this.bookingModel.findOneAndUpdate(
+            { _id: bookingId, agentId: memberId , bookingStatus: BookingStatus.PAID || BookingStatus.PENDING},
+            { $set: { bookingStatus: BookingStatus.APPROVED } },
+        );
+        if (!result) throw new BadRequestException(Message.APPROVE_FAILED);
+        return result;
+    }
 }
