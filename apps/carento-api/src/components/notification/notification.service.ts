@@ -16,7 +16,6 @@ export class NotificationService {
 		try {
 			input.authorId = memberId;
 
-			
 			input.receiverId = shapeIntoMongoObjectId(input.receiverId);
 			if (input.carId) input.carId = shapeIntoMongoObjectId(input.carId);
 			if (input.articleId) input.articleId = shapeIntoMongoObjectId(input.articleId);
@@ -45,5 +44,13 @@ export class NotificationService {
 			}
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
+	}
+
+	//getNotifications
+	public async getNotifications(memberId: ObjectId): Promise<Notification[]> {
+		const match = { receiverId: memberId };
+		const result = await this.notificationModel.aggregate([{ $match: match }, { $sort: { createdAt: -1 } }]);
+		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
+		return result;
 	}
 }

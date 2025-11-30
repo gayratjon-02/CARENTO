@@ -2,6 +2,7 @@ import { registerEnumType } from "@nestjs/graphql";
 
 export enum Message {
 	INVALID_REQUEST = 'Invalid request!',
+	NOTIFICATION_GET_FAILED = 'Notification get failed!',
 	SOMETHING_WENT_WRONG = 'Something went wrong!',
 	NO_DATA_FOUND = 'No data found!',
 	CREATE_FAILED = 'Create failed!',
