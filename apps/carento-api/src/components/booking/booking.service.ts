@@ -84,6 +84,8 @@ export class BookingService {
 		const match: T = { agentId: memberId };
 		const sort: T = { [input?.sort ?? 'startDate']: input?.direction ?? Direction.DESC };
 
+		this.shapeMatchQuery(match, input);
+
 		const result = await this.bookingModel
 			.aggregate([
 				{ $match: match },
@@ -106,4 +108,12 @@ export class BookingService {
 			metaCounter: result[0].metaCounter || [{ total: 0 }],
 		};
 	}
+
+    private shapeMatchQuery(match: T, input: BookingInquiry): void {
+        const {paymentStatus, carStatus, bookingStatus, brandType} = input;
+        if (paymentStatus) match.paymentStatus = paymentStatus;
+        if (carStatus) match.carStatus = carStatus;
+        if (bookingStatus) match.bookingStatus = bookingStatus;
+        if (brandType) match.brandType = brandType;
+    }
 }
