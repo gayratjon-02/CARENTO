@@ -6,6 +6,7 @@ import { BookingInput, BookingInquiry } from '../../libs/dto/booking/booking.inp
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { T } from '../../libs/types/common';
+import { BookingStatus, PaymentStatus } from '../../libs/enums/booking.enum';
 
 @Injectable()
 export class BookingService {
@@ -59,5 +60,15 @@ export class BookingService {
 			list: result[0].list || [],
 			metaCounter: result[0].metaCounter || [{ total: 0 }],
 		};
+	}
+
+	// cancelBooking
+	public async cancelBooking(input: ObjectId, memberId: ObjectId): Promise<Booking> {
+		const result = await this.bookingModel.findOneAndUpdate(
+			{ _id: input, userId: memberId, paymentStatus: PaymentStatus.UNPAID , bookingStatus: BookingStatus.PENDING || BookingStatus.APPROVED },
+			{ $set: { bookingStatus: BookingStatus.CANCELLED, deletedAt: new Date() } },
+		);
+		if (!result) throw new BadRequestException(Message.CANCEL_FAILED);
+		return result;
 	}
 }

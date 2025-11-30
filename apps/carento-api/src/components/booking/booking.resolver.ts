@@ -9,6 +9,7 @@ import { Member } from '../../libs/dto/member/member';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
 import { Booking, BookingsList } from '../../libs/dto/booking/booking';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Resolver()
 export class BookingResolver {
@@ -34,12 +35,22 @@ export class BookingResolver {
 		return await this.bookingService.getBooking(input, memberId);
 	}
 
-    // getMyBookings
-    @UseGuards(AuthGuard)
-    @Query(() => BookingsList)
-    public async getMyBookings(@Args('input') input: BookingInquiry, @AuthMember('_id') memberId: ObjectId): Promise<BookingsList> {
-        console.log('Query: getMyBookings');
-        return await this.bookingService.getMyBookings(input, memberId);
-    }
+	// getMyBookings
+	@UseGuards(AuthGuard)
+	@Query(() => BookingsList)
+	public async getMyBookings(
+		@Args('input') input: BookingInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<BookingsList> {
+		console.log('Query: getMyBookings');
+		return await this.bookingService.getMyBookings(input, memberId);
+	}
 
+	// cancelBooking
+	@UseGuards(AuthGuard)
+	@Mutation(() => Booking)
+	public async cancelBooking(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Booking> {
+		console.log('Mutation: cancelBooking');
+		return await this.bookingService.cancelBooking(shapeIntoMongoObjectId(input), memberId);
+	}
 }
