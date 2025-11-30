@@ -4,7 +4,7 @@ import { Model, ObjectId } from 'mongoose';
 import { NotificationInput } from '../../libs/dto/notification/notification.input';
 import { Notification } from '../../libs/dto/notification/notification';
 import { Message } from '../../libs/enums/common.enum';
-import { NotificationGroup } from '../../libs/enums/notification.enum';
+import { NotificationGroup, NotificationStatus } from '../../libs/enums/notification.enum';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
@@ -49,8 +49,36 @@ export class NotificationService {
 	//getNotifications
 	public async getNotifications(memberId: ObjectId): Promise<Notification[]> {
 		const match = { receiverId: memberId };
-		const result = await this.notificationModel.aggregate([{ $match: match }, { $sort: { createdAt: -1 } }]);
+		const result = await this.notificationModel.find(match).sort({ createdAt: -1 }).exec();
+		if (!result || !result.length) {
+			return [];
+		}
+		return result;
+	}
+
+	//readNotification
+	public async readNotification(id: string, memberId: ObjectId): Promise<Notification> {
+		const notificationId = shapeIntoMongoObjectId(id);
+		const result = await this.notificationModel
+			.findOneAndUpdate(
+				{ _id: notificationId, receiverId: memberId },
+				{ $set: { notificationStatus: NotificationStatus.READ } },
+				{ new: true },
+			)
+			.exec();
 		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
 		return result;
+	}
+
+	// readAllNotifications
+	public async readAllNotifications(memberId: ObjectId): Promise<Notification[]> {
+		const result = await this.notificationModel
+			.updateMany(
+				{ receiverId: memberId, notificationStatus: NotificationStatus.WAIT },
+				{ $set: { notificationStatus: NotificationStatus.READ } },
+			)
+			.exec();
+		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
+		return result.modifiedCount as unknown as Notification[];
 	}
 }

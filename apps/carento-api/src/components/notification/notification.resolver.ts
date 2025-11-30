@@ -1,4 +1,4 @@
-import { Mutation, Args, Resolver , Query} from '@nestjs/graphql';
+import { Mutation, Args, Resolver, Query } from '@nestjs/graphql';
 import { NotificationService } from './notification.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -18,15 +18,31 @@ export class NotificationResolver {
 		@Args('input') input: NotificationInput,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Notification> {
-        console.log('Mutation: createNotification');
+		console.log('Mutation: createNotification');
 		return await this.notificationService.createNotification(input, memberId);
 	}
 
-    //getNotifications
+	//getNotifications
+	@UseGuards(AuthGuard)
+	@Query(() => [Notification])
+	public async getNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
+		console.log('Query: getNotifications');
+		return await this.notificationService.getNotifications(memberId);
+	}
+
+	//readNotification
+	@UseGuards(AuthGuard)
+	@Mutation(() => Notification)
+	public async readNotification(@Args('id') id: string, @AuthMember('_id') memberId: ObjectId): Promise<Notification> {
+        console.log('Mutation: readNotification');
+		return await this.notificationService.readNotification(id, memberId);
+	}
+
+    // readAllNotifications
     @UseGuards(AuthGuard)
-    @Query(() => [Notification])
-    public async getNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
-        console.log('Query: getNotifications');
-        return await this.notificationService.getNotifications(memberId);
+    @Mutation(() => [Notification])
+    public async readAllNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
+        console.log('Mutation: readAllNotifications');
+        return await this.notificationService.readAllNotifications(memberId);
     }
 }
