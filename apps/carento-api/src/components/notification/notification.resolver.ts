@@ -34,15 +34,15 @@ export class NotificationResolver {
 	@UseGuards(AuthGuard)
 	@Mutation(() => Notification)
 	public async readNotification(@Args('id') id: string, @AuthMember('_id') memberId: ObjectId): Promise<Notification> {
-        console.log('Mutation: readNotification');
+		console.log('Mutation: readNotification');
 		return await this.notificationService.readNotification(id, memberId);
 	}
 
-    // readAllNotifications
-    @UseGuards(AuthGuard)
-    @Mutation(() => [Notification])
-    public async readAllNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
-        console.log('Mutation: readAllNotifications');
-        return await this.notificationService.readAllNotifications(memberId);
-    }
+	// readAllNotifications
+	@UseGuards(AuthGuard)
+	@Mutation(() => [Notification])
+	public async readAllNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
+		console.log('Mutation: readAllNotifications');
+		return await this.notificationService.readAllNotifications(memberId);
+	} 
 }
