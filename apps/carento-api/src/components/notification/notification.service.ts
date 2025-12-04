@@ -12,9 +12,9 @@ export class NotificationService {
 	constructor(@InjectModel('Notification') private readonly notificationModel: Model<Notification>) {}
 
 	//createNotification
-	public async createNotification(input: NotificationInput, memberId: ObjectId): Promise<Notification> {
+	public async createNotification(input: NotificationInput, authorId: ObjectId): Promise<Notification> {
 		try {
-			input.authorId = memberId;
+			input.authorId = authorId;
 
 			input.receiverId = shapeIntoMongoObjectId(input.receiverId);
 			if (input.carId) input.carId = shapeIntoMongoObjectId(input.carId);

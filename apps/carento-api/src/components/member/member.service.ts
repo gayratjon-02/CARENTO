@@ -15,6 +15,9 @@ import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
+import { SocketGateway } from '../../socket/socket.gateway';
+import { NotificationGroup, NotificationStatus, NotificationType } from '../../libs/enums/notification.enum';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class MemberService {
@@ -24,6 +27,8 @@ export class MemberService {
 		private authService: AuthService,
 		private viewService: ViewService,
 		private likeService: LikeService,
+		private socketGateway: SocketGateway,
+		private notificationService: NotificationService,
 	) {}
 
 	public async checkAuthRoles(): Promise<String> {
@@ -99,21 +104,21 @@ export class MemberService {
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 		//TODO: View And Like And Follow
 		if (memberId) {
-		// record view
+			// record view
 			const viewInput = { memberId: memberId, viewRefId: targetId, viewGroup: ViewGroup.MEMBER };
 			const newView = await this.viewService.recordView(viewInput);
-		// increase memberView
+			// increase memberView
 			if (newView) {
 				await this.memberModel.findOneAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
 				targetMember.memberViews++;
 			}
 
-		// meLiked
-		const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
-		targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput);
-		// meFollowed
+			// meLiked
+			const likeInput = { memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER };
+			targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput);
+			// meFollowed
 
-		targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
+			targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
 		}
 
 		return targetMember;
@@ -166,6 +171,22 @@ export class MemberService {
 			targetKey: 'memberLikes',
 			modifier: modifier,
 		});
+
+		// send notification to the target member
+		const notification = {
+			notificationType: NotificationType.LIKE,
+			notificationGroup: NotificationGroup.MEMBER,
+			notificationTitle: 'New like',
+			notificationDesc: 'Someone liked your profile.',
+			authorId: memberId,
+			receiverId: likeRefId,
+			notificationStatus: NotificationStatus.WAIT,
+		};
+
+		// create notification
+		if (modifier > 0) {
+			await this.notificationService.createNotification(notification, memberId);
+		}
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 		return result;

@@ -7,6 +7,8 @@ import { AuthModule } from '../auth/auth.module';
 import { ViewModule } from '../view/view.module';
 import { LikeModule } from '../like/like.module';
 import FollowSchema from '../../schemas/Follow.model';
+import { SocketModule } from '../../socket/socket.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
 	imports: [
@@ -26,6 +28,8 @@ import FollowSchema from '../../schemas/Follow.model';
 		AuthModule,
 		ViewModule,
 		LikeModule,
+		SocketModule,
+		NotificationModule,
 	],
 	providers: [MemberResolver, MemberService],
 	exports: [MemberService],

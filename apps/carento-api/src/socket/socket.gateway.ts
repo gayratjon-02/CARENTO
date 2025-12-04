@@ -110,15 +110,15 @@ export class SocketGateway implements OnGatewayInit {
 		});
 	}
 
-	public async sendNotification(memberId: string, notification: Notification): Promise<void> {
-		const client = this.memberClientsMap.get(memberId);
-		if (!client) {
-			return;
-		}
-		client.forEach((client) => {
-			client.send(JSON.stringify(notification));
-		});
-	}
+	// public async sendNotification(memberId: ObjectId, notification: Notification): Promise<void> {
+	// 	const client = this.memberClientsMap.get(memberId);
+	// 	if (!client) {
+	// 		return;
+	// 	}
+	// 	client.forEach((client) => {
+	// 		client.send(JSON.stringify(notification));
+	// 	});
+	// }
 }
 
 /** *************************************************************
