@@ -25,7 +25,7 @@ export class SocketGateway implements OnGatewayInit {
 	private summaryClient: number = 0;
 	private clientsAuthMap = new Map<WebSocket, Member>();
 	private messagesList: MessagePayload[] = [];
-
+	private memberClientsMap = new Map<string, Set<WebSocket>>();
 	constructor(private readonly authService: AuthService) {}
 
 	@WebSocketServer()
@@ -107,6 +107,16 @@ export class SocketGateway implements OnGatewayInit {
 			if (client.readyState === WebSocket.OPEN) {
 				client.send(JSON.stringify(message));
 			}
+		});
+	}
+
+	public async sendNotification(memberId: string, notification: Notification): Promise<void> {
+		const client = this.memberClientsMap.get(memberId);
+		if (!client) {
+			return;
+		}
+		client.forEach((client) => {
+			client.send(JSON.stringify(notification));
 		});
 	}
 }
