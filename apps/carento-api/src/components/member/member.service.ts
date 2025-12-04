@@ -184,7 +184,7 @@ export class MemberService {
 		};
 
 		// create notification
-		if (modifier > 0) {
+		if (modifier === 1) {
 			await this.notificationService.createNotification(notification, memberId);
 		}
 
