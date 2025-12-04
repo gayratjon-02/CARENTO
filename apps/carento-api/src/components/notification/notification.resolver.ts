@@ -45,4 +45,11 @@ export class NotificationResolver {
 		console.log('Mutation: readAllNotifications');
 		return await this.notificationService.readAllNotifications(memberId);
 	} 
+	// deleteNotification
+	@UseGuards(AuthGuard)
+	@Mutation(() => Notification)
+	public async deleteNotification(@Args('id') id: string, @AuthMember('_id') memberId: ObjectId): Promise<Notification> {
+		console.log('Mutation: deleteNotification');
+		return await this.notificationService.deleteNotification(id, memberId);
+	}
 }

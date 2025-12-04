@@ -81,4 +81,12 @@ export class NotificationService {
 		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
 		return result.modifiedCount as unknown as Notification[];
 	}
+
+	// deleteNotification
+	public async deleteNotification(id: string, memberId: ObjectId): Promise<Notification> {
+		const notificationId = shapeIntoMongoObjectId(id);
+		const result = await this.notificationModel.findOneAndDelete({ _id: notificationId, receiverId: memberId }).exec();
+		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
+		return result;
+	}
 }
