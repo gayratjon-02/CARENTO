@@ -5,6 +5,8 @@ import * as WebSocket from 'ws';
 import { Member } from '../libs/dto/member/member';
 import * as url from 'url';
 import { AuthService } from '../components/auth/auth.service';
+import { NotificationInput } from '../libs/dto/notification/notification.input';
+import { ObjectId } from 'mongoose';
 
 interface MessagePayload {
 	event: string;
@@ -49,6 +51,7 @@ export class SocketGateway implements OnGatewayInit {
 		const authMember = await this.retrieveAuth(req);
 		this.summaryClient++;
 		this.clientsAuthMap.set(client, authMember);
+		this.registerClient(authMember?._id?.toString(), client);
 
 		const clientNick: string = authMember?.memberNick ?? 'Guest';
 		this.logger.verbose(`Connection ${clientNick} & total: [${this.summaryClient}]`);
@@ -67,6 +70,7 @@ export class SocketGateway implements OnGatewayInit {
 		const authMember = this.clientsAuthMap.get(client);
 		this.summaryClient--;
 		this.clientsAuthMap.delete(client);
+		this.unregisterClient(authMember?._id?.toString(), client);
 
 		const clientNick: string = authMember?.memberNick ?? 'Guest';
 		this.logger.verbose(`Disconnection ${clientNick} & total: [${this.summaryClient}]`);
@@ -110,15 +114,45 @@ export class SocketGateway implements OnGatewayInit {
 		});
 	}
 
-	// public async sendNotification(memberId: ObjectId, notification: Notification): Promise<void> {
-	// 	const client = this.memberClientsMap.get(memberId);
-	// 	if (!client) {
-	// 		return;
-	// 	}
-	// 	client.forEach((client) => {
-	// 		client.send(JSON.stringify(notification));
-	// 	});
-	// }
+	public async sendNotification(memberId: ObjectId, notification: NotificationInput): Promise<void> {
+		const clients = this.memberClientsMap.get(memberId.toString());
+		if (!clients || !clients.size) {
+			return;
+		}
+		const payload = {
+			event: 'notification',
+			data: notification,
+		};
+		clients.forEach((clientSocket) => {
+			if (clientSocket.readyState === WebSocket.OPEN) {
+				clientSocket.send(JSON.stringify(payload));
+			}
+		});
+	}
+
+	private registerClient(memberId: string | undefined, client: WebSocket) {
+		if (!memberId) {
+			return;
+		}
+		if (!this.memberClientsMap.has(memberId)) {
+			this.memberClientsMap.set(memberId, new Set());
+		}
+		this.memberClientsMap.get(memberId)?.add(client);
+	}
+
+	private unregisterClient(memberId: string | undefined, client: WebSocket) {
+		if (!memberId) {
+			return;
+		}
+		const clients = this.memberClientsMap.get(memberId);
+		if (!clients) {
+			return;
+		}
+		clients.delete(client);
+		if (!clients.size) {
+			this.memberClientsMap.delete(memberId);
+		}
+	}
 }
 
 /** *************************************************************

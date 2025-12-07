@@ -186,6 +186,8 @@ export class MemberService {
 		// create notification
 		if (modifier === 1) {
 			await this.notificationService.createNotification(notification, memberId);
+			// send notification
+			this.socketGateway.sendNotification(likeRefId, notification);
 		}
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
