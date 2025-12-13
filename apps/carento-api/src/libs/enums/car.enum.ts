@@ -4,12 +4,14 @@ export enum BrandType {
 	BMW = 'BMW',
 	MERCEDES = 'MERCEDES',
 	VOLKSWAGEN = 'VOLKSWAGEN',
-	VOLVO = 'VOLVO',
 	JAGUAR = 'JAGUAR',
 	LEXUS = 'LEXUS',
 	AUDI = 'AUDI',
 	HONDA = 'HONDA',
 	KIA = 'KIA',
+	HYUNDAI = 'HYUNDAI',
+	TESLA = 'TESLA',
+	CHEVROLET = 'CHEVROLET',
 }
 
 registerEnumType(BrandType, {

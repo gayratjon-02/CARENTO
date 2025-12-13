@@ -49,7 +49,7 @@ export class CarsResolver {
 		return await this.carsService.updateCar(memberId, input);
 	}
 
-	// Get Car
+	// Get Cars
 	@UseGuards(WithoutGuard)
 	@Query(() => CarsList)
 	public async getCars(@Args('input') input: CarsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<CarsList> {

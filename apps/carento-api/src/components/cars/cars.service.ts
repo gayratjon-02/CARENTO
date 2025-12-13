@@ -113,6 +113,8 @@ export class CarsService {
 				},
 			])
 			.exec();
+
+		console.log('Result=>', result[0]);
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		return result[0];
