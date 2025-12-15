@@ -78,7 +78,7 @@ export class CarsService {
 		if (deletedAt) {
 			await this.memberService.memberStatsEditor({
 				_id: memberId,
-				targetKey: 'memberProperties',
+				targetKey: 'memberCars',
 				modifier: -1,
 			});
 		}
@@ -131,11 +131,12 @@ export class CarsService {
 			fuelType,
 			transmission,
 			seats,
+			doors,
 			year,
 			pricePerDay,
 			pricePerHour,
 			mileage,
-
+			engine,
 			text,
 		} = input.search;
 
@@ -149,6 +150,9 @@ export class CarsService {
 		if (year && year.length) match.year = { $in: year };
 		if (pricePerDay) match.pricePerDay = { $gte: pricePerDay.start, $lte: pricePerDay.end };
 		if (pricePerHour) match.pricePerHour = { $gte: pricePerHour.start, $lte: pricePerHour.end };
+		if (mileage) match.mileage = { $gte: mileage.start, $lte: mileage.end };
+		if (engine) match.engine = { $regex: new RegExp(engine, 'i') };
+		if (doors && doors.length) match.doors = { $in: doors };
 		if (mileage) match.mileage = { $gte: mileage.start, $lte: mileage.end };
 		if (text) match.carTitle = { $regex: new RegExp(text, 'i') };
 	}

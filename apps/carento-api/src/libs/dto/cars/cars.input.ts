@@ -3,7 +3,7 @@ import { IsArray, IsEnum, IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } fro
 import { ObjectId } from 'mongoose';
 import { BrandType, CarLocation, CarStatus, CarType, FuelType, Transmission } from '../../enums/car.enum';
 import { Direction } from '../../enums/common.enum';
-import { availableAgentSorts } from '../../config';
+import { availableAgentSorts, availableCarSorts, availableOptions } from '../../config';
 
 @InputType()
 export class CarsInput {
@@ -158,6 +158,65 @@ export class CarsSearch {
 }
 
 @InputType()
+export class CISearch {
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	memberId?: ObjectId;
+
+	@IsOptional()
+	@Field(() => [CarLocation], { nullable: true })
+	carLocation?: CarLocation[];
+
+	@IsOptional()
+	@Field(() => [CarType], { nullable: true })
+	carType?: CarType[];
+
+	@IsOptional()
+	@Field(() => [BrandType], { nullable: true })
+	brandType?: BrandType[];
+
+	@IsOptional()
+	@Field(() => [FuelType], { nullable: true })
+	fuelType?: FuelType[];
+
+	@IsOptional()
+	@Field(() => [Transmission], { nullable: true })
+	transmission?: Transmission[];
+
+	@IsOptional()
+	@Field(() => [Int], { nullable: true })
+	seats?: number[];
+
+	@IsOptional()
+	@Field(() => [Int], { nullable: true })
+	doors?: number[];
+
+	@IsOptional()
+	@Field(() => [Int], { nullable: true })
+	year?: number[];
+
+	@IsOptional()
+	@Field(() => PricesRange, { nullable: true })
+	pricePerDay?: PricesRange;
+
+	@IsOptional()
+	@Field(() => PricesRange, { nullable: true })
+	pricePerHour?: PricesRange;
+
+	@IsOptional()
+	@Field(() => PricesRange, { nullable: true })
+	mileage?: PricesRange;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	engine?: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	text?: string;
+}
+
+@InputType()
 export class CarsInquiry {
 	@IsNotEmpty()
 	@Min(1)
@@ -170,7 +229,7 @@ export class CarsInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(availableAgentSorts)
+	@IsIn(availableCarSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
@@ -181,7 +240,7 @@ export class CarsInquiry {
 
 	@IsNotEmpty()
 	@Field(() => CarsSearch)
-	search: CarsSearch;
+	search: CISearch;
 }
 
 @InputType()

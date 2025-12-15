@@ -12,6 +12,7 @@ export enum BrandType {
 	HYUNDAI = 'HYUNDAI',
 	TESLA = 'TESLA',
 	CHEVROLET = 'CHEVROLET',
+	GENESIS = 'GENESIS',
 }
 
 registerEnumType(BrandType, {

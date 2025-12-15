@@ -5,6 +5,7 @@ import { T } from './types/common';
 import { BookingStatus } from './enums/booking.enum';
 
 export const availableAgentSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews', 'memberRank'];
+export const availableCarSorts = ['createdAt', 'updatedAt', 'carLikes', 'carViews', 'carRank', 'carPrice'];
 export const availableMemberSorts = ['createdAt', 'updatedAt', 'memberLikes', 'memberViews'];
 export const availableBookingSorts = [
 	'createdAt',

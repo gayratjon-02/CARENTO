@@ -59,12 +59,14 @@ export class Car {
 	@Field(() => Number, { nullable: true })
 	pricePerHour?: number;
 
-
 	@Field(() => Number, { nullable: true })
 	carLikes?: number;
 
 	@Field(() => Int, { nullable: true })
 	carViews?: number;
+
+	@Field(() => Number, { nullable: true })
+	carRank?: number;
 
 	@Field(() => Date, { nullable: true })
 	deletedAt?: Date;

@@ -103,6 +103,11 @@ const CarsSchema = new Schema(
 			default: 0,
 		},
 
+		carRank: {
+			type: Number,
+			default: 0,
+		},
+
 		deletedAt: {
 			type: Date,
 		},
