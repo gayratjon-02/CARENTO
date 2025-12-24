@@ -11,7 +11,7 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { CarStatus } from '../../libs/enums/car.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeGroup } from '../../libs/enums/like.enum';
-import moment from 'moment';
+import moment = require('moment');
 import { CarsUpdate } from '../../libs/dto/cars/cars.update';
 import { lookupMember, loopupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeInput } from '../../libs/dto/like/like.input';
