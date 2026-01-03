@@ -12,12 +12,15 @@ import {
 	loopupAuthMemberLiked,
 } from '../../libs/config';
 import { T } from '../../libs/types/common';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class FollowService {
 	constructor(
 		@InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
 		private readonly memberService: MemberService,
+		private readonly notificationService: 			NotificationService,
 	) {}
 
 	public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
@@ -25,13 +28,25 @@ export class FollowService {
 			throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED);
 		}
 
-		const targetMember = await this.memberService.getMember(null, followingId); // tushunmadim
+		const targetMember = await this.memberService.getMember(null, followingId); // done
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		const result = await this.registerSubscription(followerId, followingId);
 
 		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 });
 		await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 });
+
+		if (result)
+			this.notificationService.createNotification(
+				{
+					notificationType: NotificationType.FOLLOW,
+					notificationGroup: NotificationGroup.MEMBER,
+					notificationTitle: 'New Follower',
+					notificationDesc: `You have a new follower!`,
+					receiverId: followingId,
+				},
+				followerId,
+			);
 
 		return result;
 	}
@@ -53,10 +68,12 @@ export class FollowService {
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		const result = await this.followModel.findOneAndDelete({
-			followingId: followingId,
-			followerId: followerId,
-		}).exec();
+		const result = await this.followModel
+			.findOneAndDelete({
+				followingId: followingId,
+				followerId: followerId,
+			})
+			.exec();
 		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: -1 });
