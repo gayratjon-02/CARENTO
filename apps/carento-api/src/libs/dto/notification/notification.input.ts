@@ -7,10 +7,6 @@ import { availableNotificationSorts } from '../../config';
 
 @InputType()
 export class NotificationInput {
-
-
-
-    
 	@IsNotEmpty()
 	@IsEnum(NotificationType)
 	@Field(() => NotificationType)
@@ -97,4 +93,3 @@ export class NotificationsInquiry {
 	@Field(() => NotificationSearch, { nullable: true })
 	search?: NotificationSearch;
 }
-

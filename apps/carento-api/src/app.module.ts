@@ -20,11 +20,14 @@ import { SocketModule } from './socket/socket.module';
 			playground: true,
 			uploads: false,
 			autoSchemaFile: true,
-			formatError: (error:T) => {
+			subsctiptions: {
+				'graphql-ws': true,
+			},
+			formatError: (error: T) => {
 				const graphQLFormattedError = {
 					code: error?.extensions?.code,
-					message: 
-					error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
+					message:
+						error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
 				};
 				return graphQLFormattedError;
 			},
