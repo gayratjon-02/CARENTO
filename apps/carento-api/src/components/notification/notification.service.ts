@@ -49,7 +49,57 @@ export class NotificationService {
 	//getNotifications
 	public async getNotifications(memberId: ObjectId): Promise<Notification[]> {
 		const match = { receiverId: memberId };
-		const result = await this.notificationModel.find(match).sort({ createdAt: -1 }).exec();
+		const result = await this.notificationModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: { createdAt: -1 } },
+				// Lookup author data
+				{
+					$lookup: {
+						from: 'members',
+						localField: 'authorId',
+						foreignField: '_id',
+						as: 'authorData',
+					},
+				},
+				// Lookup receiver data
+				{
+					$lookup: {
+						from: 'members',
+						localField: 'receiverId',
+						foreignField: '_id',
+						as: 'receiverData',
+					},
+				},
+				// Lookup car data (if exists)
+				{
+					$lookup: {
+						from: 'cars',
+						localField: 'carId',
+						foreignField: '_id',
+						as: 'carData',
+					},
+				},
+				// Lookup article data (if exists)
+				{
+					$lookup: {
+						from: 'articles',
+						localField: 'articleId',
+						foreignField: '_id',
+						as: 'articleData',
+					},
+				},
+				// Unwind arrays (keep first element or null)
+				{
+					$addFields: {
+						authorData: { $arrayElemAt: ['$authorData', 0] },
+						receiverData: { $arrayElemAt: ['$receiverData', 0] },
+						carData: { $arrayElemAt: ['$carData', 0] },
+						articleData: { $arrayElemAt: ['$articleData', 0] },
+					},
+				},
+			])
+			.exec();
 		if (!result || !result.length) {
 			return [];
 		}
