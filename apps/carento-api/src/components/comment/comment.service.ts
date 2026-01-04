@@ -11,6 +11,8 @@ import { CarsService } from '../cars/cars.service';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { T } from '../../libs/types/common';
 import { lookupMember } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
 @Injectable()
 export class CommentService {
@@ -19,6 +21,7 @@ export class CommentService {
 		private readonly memberService: MemberService,
 		private readonly articleService: ArticleService,
 		private readonly carsService: CarsService,
+		private readonly notificationService: NotificationService,
 	) {}
 
 	// create comment
@@ -50,6 +53,17 @@ export class CommentService {
 				});
 				break;
 		}
+		if (result)
+			this.notificationService.createNotification(
+				{
+					notificationType: NotificationType.COMMENT,
+					notificationGroup: NotificationGroup.ARTICLE,
+					notificationTitle: 'New Comment',
+					notificationDesc: 'You have a new comment on your article.',
+					receiverId: input.commentRefId,
+				},
+				memberId,
+			);
 		if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
 
 		return result;

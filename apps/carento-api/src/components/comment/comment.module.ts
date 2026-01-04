@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 import { ArticleModule } from '../article/article.module';
 import { CarsModule } from '../cars/cars.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
 	imports: [
@@ -14,8 +15,10 @@ import { CarsModule } from '../cars/cars.module';
 		AuthModule,
 		MemberModule,
 		ArticleModule,
-        CarsModule,
+		CarsModule,
+		NotificationModule,
 	],
 	providers: [CommentResolver, CommentService],
+	exports: [CommentService],
 })
 export class CommentModule {}
