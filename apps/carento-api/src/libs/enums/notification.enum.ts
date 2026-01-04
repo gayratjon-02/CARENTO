@@ -6,7 +6,6 @@ export enum NotificationType {
 	FOLLOW = 'FOLLOW',
 	MESSAGE = 'MESSAGE',
 	SUBSCRIPTION = 'SUBSCRIPTION',
-	
 }
 
 registerEnumType(NotificationType, {
@@ -28,6 +27,7 @@ export enum NotificationGroup {
 	MEMBER = 'MEMBER',
 	ARTICLE = 'ARTICLE',
 	CAR = 'CAR',
+	COMMENT = 'COMMENT',
 }
 
 registerEnumType(NotificationGroup, {

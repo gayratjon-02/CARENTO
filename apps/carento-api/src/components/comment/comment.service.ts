@@ -57,7 +57,7 @@ export class CommentService {
 			this.notificationService.createNotification(
 				{
 					notificationType: NotificationType.COMMENT,
-					notificationGroup: NotificationGroup.ARTICLE,
+					notificationGroup: NotificationGroup.COMMENT,
 					notificationTitle: 'New Comment',
 					notificationDesc: 'You have a new comment on your article.',
 					receiverId: input.commentRefId,
