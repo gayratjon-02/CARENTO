@@ -3,7 +3,7 @@ import { NotificationService } from './notification.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Notification } from '../../libs/dto/notification/notification';
-import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationInput, NotificationsInquiry } from '../../libs/dto/notification/notification.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 
@@ -25,9 +25,12 @@ export class NotificationResolver {
 	//getNotifications
 	@UseGuards(AuthGuard)
 	@Query(() => [Notification])
-	public async getNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
+	public async getNotifications(
+		@AuthMember('_id') memberId: ObjectId,
+		@Args('input') input: NotificationsInquiry,
+	): Promise<Notification[]> {
 		console.log('Query: getNotifications');
-		return await this.notificationService.getNotifications(memberId);
+		return await this.notificationService.getNotifications(memberId, input);
 	}
 
 	//readNotification
@@ -44,11 +47,14 @@ export class NotificationResolver {
 	public async readAllNotifications(@AuthMember('_id') memberId: ObjectId): Promise<Notification[]> {
 		console.log('Mutation: readAllNotifications');
 		return await this.notificationService.readAllNotifications(memberId);
-	} 
+	}
 	// deleteNotification
 	@UseGuards(AuthGuard)
 	@Mutation(() => Notification)
-	public async deleteNotification(@Args('id') id: string, @AuthMember('_id') memberId: ObjectId): Promise<Notification> {
+	public async deleteNotification(
+		@Args('id') id: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Notification> {
 		console.log('Mutation: deleteNotification');
 		return await this.notificationService.deleteNotification(id, memberId);
 	}

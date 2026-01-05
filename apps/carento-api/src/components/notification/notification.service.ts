@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { NotificationInput } from '../../libs/dto/notification/notification.input';
+import { NotificationInput, NotificationsInquiry } from '../../libs/dto/notification/notification.input';
 import { Notification } from '../../libs/dto/notification/notification';
 import { Message } from '../../libs/enums/common.enum';
 import { NotificationGroup, NotificationStatus } from '../../libs/enums/notification.enum';
@@ -47,7 +47,8 @@ export class NotificationService {
 	}
 
 	//getNotifications
-	public async getNotifications(memberId: ObjectId): Promise<Notification[]> {
+	public async getNotifications(memberId: ObjectId, input: NotificationsInquiry): Promise<Notification[]> {
+		
 		const match = { receiverId: memberId };
 		const result = await this.notificationModel
 			.aggregate([
