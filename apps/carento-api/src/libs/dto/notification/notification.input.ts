@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsEnum, IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { IsEnum, IsIn, IsNotEmpty, IsOptional, Length, Max, Min } from 'class-validator';
 import { ObjectId } from 'mongoose';
 import { NotificationGroup, NotificationStatus, NotificationType } from '../../enums/notification.enum';
 import { Direction } from '../../enums/common.enum';
@@ -69,15 +69,16 @@ class NotificationSearch {
 
 @InputType()
 export class NotificationsInquiry {
-	@IsNotEmpty()
+	@IsOptional()
 	@Min(1)
-	@Field(() => Int)
-	page: number;
+	@Field(() => Int, { nullable: true, defaultValue: 1 })
+	page?: number;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@Min(1)
-	@Field(() => Int)
-	limit: number;
+	@Max(50)
+	@Field(() => Int, { nullable: true, defaultValue: 10 })
+	limit?: number;
 
 	@IsOptional()
 	@IsIn(availableNotificationSorts)

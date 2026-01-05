@@ -2,10 +2,12 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { NotificationInput, NotificationsInquiry } from '../../libs/dto/notification/notification.input';
-import { Notification } from '../../libs/dto/notification/notification';
+import { Notification, NotificationsList } from '../../libs/dto/notification/notification';
 import { Message } from '../../libs/enums/common.enum';
 import { NotificationGroup, NotificationStatus } from '../../libs/enums/notification.enum';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { Direction } from '../../libs/enums/common.enum';
+import { T } from '../../libs/types/common';
 
 @Injectable()
 export class NotificationService {
@@ -47,64 +49,72 @@ export class NotificationService {
 	}
 
 	//getNotifications
-	public async getNotifications(memberId: ObjectId, input: NotificationsInquiry): Promise<Notification[]> {
-		
-		const match = { receiverId: memberId };
+	public async getNotifications(memberId: ObjectId, input: NotificationsInquiry): Promise<NotificationsList> {
+		const match: T = { receiverId: memberId };
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		if (input?.search?.notificationType) match.notificationType = input.search.notificationType;
+		if (input?.search?.notificationGroup) match.notificationGroup = input.search.notificationGroup;
+		if (input?.search?.notificationStatus) match.notificationStatus = input.search.notificationStatus;
+
+		const page = input?.page ?? 1;
+		const limit = input?.limit ?? 10;
+
 		const result = await this.notificationModel
 			.aggregate([
 				{ $match: match },
-				{ $sort: { createdAt: -1 } },
-				// Lookup author data
+				{ $sort: sort },
 				{
-					$lookup: {
-						from: 'members',
-						localField: 'authorId',
-						foreignField: '_id',
-						as: 'authorData',
-					},
-				},
-				// Lookup receiver data
-				{
-					$lookup: {
-						from: 'members',
-						localField: 'receiverId',
-						foreignField: '_id',
-						as: 'receiverData',
-					},
-				},
-				// Lookup car data (if exists)
-				{
-					$lookup: {
-						from: 'cars',
-						localField: 'carId',
-						foreignField: '_id',
-						as: 'carData',
-					},
-				},
-				// Lookup article data (if exists)
-				{
-					$lookup: {
-						from: 'articles',
-						localField: 'articleId',
-						foreignField: '_id',
-						as: 'articleData',
-					},
-				},
-				// Unwind arrays (keep first element or null)
-				{
-					$addFields: {
-						authorData: { $arrayElemAt: ['$authorData', 0] },
-						receiverData: { $arrayElemAt: ['$receiverData', 0] },
-						carData: { $arrayElemAt: ['$carData', 0] },
-						articleData: { $arrayElemAt: ['$articleData', 0] },
+					$facet: {
+						list: [
+							{ $skip: (page - 1) * limit },
+							{ $limit: limit },
+							{
+								$lookup: {
+									from: 'members',
+									localField: 'authorId',
+									foreignField: '_id',
+									as: 'authorData',
+								},
+							},
+							{ $unwind: { path: '$authorData', preserveNullAndEmptyArrays: true } },
+							{
+								$lookup: {
+									from: 'members',
+									localField: 'receiverId',
+									foreignField: '_id',
+									as: 'receiverData',
+								},
+							},
+							{ $unwind: { path: '$receiverData', preserveNullAndEmptyArrays: true } },
+							{
+								$lookup: {
+									from: 'cars',
+									localField: 'carId',
+									foreignField: '_id',
+									as: 'carData',
+								},
+							},
+							{ $unwind: { path: '$carData', preserveNullAndEmptyArrays: true } },
+							{
+								$lookup: {
+									from: 'articles',
+									localField: 'articleId',
+									foreignField: '_id',
+									as: 'articleData',
+								},
+							},
+							{ $unwind: { path: '$articleData', preserveNullAndEmptyArrays: true } },
+						],
+						metaCounter: [{ $count: 'total' }],
 					},
 				},
 			])
 			.exec();
-		if (!result || !result.length) {
-			return [];
-		}
-		return result;
+
+		const response = result?.[0] ?? { list: [], metaCounter: [] };
+		if (!response.metaCounter?.length) response.metaCounter = [{ total: 0 }];
+		return response;
 	}
 
 	//readNotification
