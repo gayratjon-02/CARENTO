@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from './libs/interceptor/Logging.interceptor';
 import { graphqlUploadExpress } from 'graphql-upload';
 import * as express from 'express';
+import { join } from 'path';
 import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
@@ -12,9 +13,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.enableCors({ origin: true, credentials: true });
 
-
   app.use(graphqlUploadExpress({ maxFileSize: 15000000, maxFiles: 10 }));
-	app.use('/uploads', express.static('./uploads'));
+  const uploadsPath = join(process.cwd(), 'uploads');
+  app.use('/uploads', express.static(uploadsPath));
 
   app.useWebSocketAdapter(new WsAdapter(app));
   await app.listen(process.env.PORT_API ?? 3000);
