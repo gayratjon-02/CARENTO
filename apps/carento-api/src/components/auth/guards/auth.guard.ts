@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
 			return true;
 		}
 
-		// description => http, rpc, gprs and etc are ignored
+		// HTTP, RPC va boshqa kontextlar: ruxsat bermaslik (undefined qaytarmaslik)
+		throw new UnauthorizedException(Message.NOT_AUTHENTICATED);
 	}
 }

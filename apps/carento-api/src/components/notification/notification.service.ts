@@ -133,14 +133,14 @@ export class NotificationService {
 
 	// readAllNotifications
 	public async readAllNotifications(memberId: ObjectId): Promise<Notification[]> {
-		const result = await this.notificationModel
+		await this.notificationModel
 			.updateMany(
 				{ receiverId: memberId, notificationStatus: NotificationStatus.WAIT },
 				{ $set: { notificationStatus: NotificationStatus.READ } },
 			)
 			.exec();
-		if (!result) throw new BadRequestException(Message.NO_DATA_FOUND);
-		return result.modifiedCount as unknown as Notification[];
+		const list = await this.getNotifications(memberId, { page: 1, limit: 1000 });
+		return list?.list ?? [];
 	}
 
 	// deleteNotification
